@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-const service = axios.create({
-  baseURL:'http:localhost:8001',//api的base_url
-  timeout: 20000
+const request = axios.create({
+  baseURL: process.env.VUE_APP_BASE_API, //基础路径,.env.development
+  timeout: 5000 //超时时间，5000毫秒
 })
-export default service
+export default request  // 导出自定义的axios对象

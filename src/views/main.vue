@@ -67,7 +67,7 @@ export default {
   padding: 0;
   width: 100%;
   height: 72px;
-  z-index: 8;
+  z-index: 2;
   box-sizing: border-box;
   box-shadow: 0 0 10px #ccc;
 }
