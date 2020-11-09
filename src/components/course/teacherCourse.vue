@@ -4,7 +4,7 @@
       <div class="symbol">教</div>
       <div class="tri"></div>
     </div>
-    <div :style="{backgroundImage:'url(https://ktp123.oss-cn-beijing.aliyuncs.com/cover/35.png)'}" class="fulImg">
+    <div :style="{backgroundImage:'url('+course.miniCover+')'}" class="fulImg">
       <div class="title-name">
         <a class="course-title" href="#">{{ course.courseTitle }}</a><br/>
         <span class="class-name">{{ course.className }}</span><br/>
