@@ -40,11 +40,11 @@
 export default {
 
   components: {},
-  name: "home",
-  data() {
+  name: 'home',
+  data () {
     return {
       activeNavIndex: '课堂',
-      userName: '王金锋',
+      userName: '王金锋'
     }
   }
 }

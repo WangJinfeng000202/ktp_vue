@@ -12,10 +12,10 @@ const routes = [
     path: '/Main',
     name: 'main',
     component: () => import('@/views/main'),
-    children:[{
-      path:'index',
-      name:'courses',
-      component: ()=> import('@/views/courseList')
+    children: [{
+      path: 'index',
+      name: 'courses',
+      component: () => import('@/views/courseList')
     }]
   }
 ]
