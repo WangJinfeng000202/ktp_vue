@@ -51,11 +51,5 @@ export default {
       url:`/front-edu/course/removeCourse/${courseId}`,
       method:'delete'
     })
-  },
-  removeCourseJoined(courseId){
-    return request({
-      url:`/front-edu/course/dropCourse/${courseId}`,
-      method:'delete'
-    })
-  },
+  }
 }

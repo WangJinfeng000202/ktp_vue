@@ -16,7 +16,8 @@
       <!-- 课程排序/归档管理按钮-->
       <div class="sortAndGuiDang">
         <span style="cursor: pointer;"><i class="el-icon-sort"></i>课程排序</span>
-        &nbsp; &nbsp; <span style="cursor: pointer;"><i class="el-icon-files"></i>归档管理</span>
+        <span style="display:inline-block;width: 20px"></span>
+        <span style="cursor: pointer;"><i class="el-icon-files"></i>归档管理</span>
       </div>
     </div>
     <!--置顶课程-->
@@ -61,22 +62,27 @@
           </template>
         </div>
         <div class="course-foot">
-        <span><img class=" avatar el-avatar--small el-avatar--circle"
-                   src="https://ktp123.oss-cn-beijing.aliyuncs.com/cover/35.png" alt="">
-        </span>
-          <span style="font-size: 12px;margin-left: 10px">成员{{ course.userVos.length }}人</span>
-          <span @click="topOrNotCourse(course)" class="is-top">{{ course.isTop === 0 ? '取消置顶' : '置顶' }}</span>
-          <el-dropdown trigger="click" placement="top-end">
-            <span class="more-op">更多<img src="@/assets/course/more.png" alt=""></span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item><span @click="popUpdateCourseForm(course.id)">编辑</span></el-dropdown-item>
-              <el-dropdown-item><span @click="popRemoveCourseDialog(course)">删除</span></el-dropdown-item>
-              <el-dropdown-item><span>归档</span></el-dropdown-item>
-              <el-dropdown-item>复制课程</el-dropdown-item>
-              <el-dropdown-item>打包下载</el-dropdown-item>
-              <el-dropdown-item>转让</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
+          <div>
+             <span>
+            <img class=" avatar el-avatar--small el-avatar--circle"
+                 src="https://ktp123.oss-cn-beijing.aliyuncs.com/cover/35.png" alt="">
+          </span>
+            <span style="font-size: 12px;margin-left: 10px">成员{{ course.userVos.length }}人</span>
+          </div>
+          <div>
+            <span @click="topOrNotCourse(course)" class="is-top">{{ course.isTop === 0 ? '取消置顶' : '置顶' }}</span>
+            <el-dropdown trigger="click" placement="top-end">
+              <span class="more-op">更多<img src="@/assets/course/more.png" alt=""></span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item><span @click="popUpdateCourseForm(course.id)">编辑</span></el-dropdown-item>
+                <el-dropdown-item><span @click="popRemoveCourseDialog(course)">删除</span></el-dropdown-item>
+                <el-dropdown-item><span>归档</span></el-dropdown-item>
+                <el-dropdown-item>复制课程</el-dropdown-item>
+                <el-dropdown-item>打包下载</el-dropdown-item>
+                <el-dropdown-item>转让</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
         </div>
       </div>
       <!--加入的置顶课程-->
@@ -112,18 +118,22 @@
           </template>
         </div>
         <div class="course-foot">
-        <span><img class=" avatar el-avatar--small el-avatar--circle"
-                   :src="course.userVo.avatar" alt="">
-        </span>
-          <span style="font-size: 12px;margin-left: 10px">userVo.username</span>
-          <span class="is-top">{{ course.isTop === 0 ? '取消置顶' : '置顶' }}</span>
-          <el-dropdown trigger="click" placement="top-end">
-            <span class="more-op">更多<img src="@/assets/course/more.png" alt=""></span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item><span>归档</span></el-dropdown-item>
-              <el-dropdown-item><span>退课</span></el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
+          <div>
+            <span>
+              <img class=" avatar el-avatar--small el-avatar--circle" :src="course.userVo.avatar" alt="">
+            </span>
+            <span style="font-size: 12px;margin-left: 10px">{{ course.userVo.username }}</span>
+          </div>
+          <div>
+            <span class="is-top" @click="topOrNotUserCourse(course)">{{ course.isTop === 0 ? '取消置顶' : '置顶' }}</span>
+            <el-dropdown trigger="click" placement="top-end">
+              <span class="more-op">更多<img src="@/assets/course/more.png" alt=""></span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item><span>归档</span></el-dropdown-item>
+                <el-dropdown-item><span @click="popDropCourseDialog(course)">退课</span></el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
         </div>
       </div>
       <!--占位样式-->
@@ -170,23 +180,25 @@
           </template>
         </div>
         <div class="course-foot">
-        <span><img class=" avatar el-avatar--small el-avatar--circle"
-                   src="https://ktp123.oss-cn-beijing.aliyuncs.com/cover/35.png" alt="">
-        </span>
-          <span style="font-size: 12px;margin-left: 10px">成员{{ course.userVos.length }}人</span>
-          <span @click="topOrNotCourse(course)" class="is-top">{{ course.isTop === 0 ? '取消置顶' : '置顶' }}</span>
-
-          <el-dropdown trigger="click" placement="top-end">
-            <span class="more-op">更多<img src="@/assets/course/more.png" alt=""></span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item><span @click="popUpdateCourseForm(course.id)">编辑</span></el-dropdown-item>
-              <el-dropdown-item><span>删除</span></el-dropdown-item>
-              <el-dropdown-item><span>归档</span></el-dropdown-item>
-              <el-dropdown-item>复制课程</el-dropdown-item>
-              <el-dropdown-item>打包下载</el-dropdown-item>
-              <el-dropdown-item>转让</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
+          <div>
+            <span><img class=" avatar el-avatar--small el-avatar--circle"
+                       src="https://ktp123.oss-cn-beijing.aliyuncs.com/cover/35.png" alt=""></span>
+            <span style="font-size: 12px;margin-left: 10px">成员{{ course.userVos.length }}人</span>
+          </div>
+          <div>
+            <span @click="topOrNotCourse(course)" class="is-top">{{ course.isTop === 0 ? '取消置顶' : '置顶' }}</span>
+            <el-dropdown trigger="click" placement="top-end">
+              <span class="more-op">更多<img src="@/assets/course/more.png" alt=""></span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item><span @click="popUpdateCourseForm(course.id)">编辑</span></el-dropdown-item>
+                <el-dropdown-item><span @click="popRemoveCourseDialog(course)">删除</span></el-dropdown-item>
+                <el-dropdown-item><span>归档</span></el-dropdown-item>
+                <el-dropdown-item>复制课程</el-dropdown-item>
+                <el-dropdown-item>打包下载</el-dropdown-item>
+                <el-dropdown-item>转让</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
         </div>
       </div>
       <!--加入的非置顶课程-->
@@ -222,16 +234,31 @@
           </template>
         </div>
         <div class="course-foot">
-        <span><img class=" avatar el-avatar--small el-avatar--circle"
-                   :src="course.userVo.avatar" alt="">
-        </span>
-          <span style="font-size: 12px;margin-left: 10px">userVo.username</span>
-          <span class="is-top">{{ course.isTop === 0 ? '取消置顶' : '置顶' }}</span>
-          <span class="more-op">更多<img src="@/assets/course/more.png" alt=""></span>
+          <div>
+            <span><img class=" avatar el-avatar--small el-avatar--circle" :src="course.userVo.avatar" alt=""></span>
+            <span style="font-size: 12px;margin-left: 10px">{{ course.userVo.username }}</span>
+          </div>
+          <div>
+            <span class="is-top" @click="topOrNotUserCourse(course)">{{ course.isTop === 0 ? '取消置顶' : '置顶' }}</span>
+            <el-dropdown trigger="click" placement="top-end">
+              <span class="more-op">更多<img src="@/assets/course/more.png" alt=""></span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item><span @click="popDropCourseDialog(course)">退课</span></el-dropdown-item>
+                <el-dropdown-item><span>归档</span></el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+        </div>
+      </div>
+      <div class="course">
+        <div class="fulImg"></div>
+        <div style="width: 100%">
+          <div style="font-size: 25px">+</div>
+          <div>创建课程</div>
         </div>
       </div>
       <!--占位样式-->
-      <no-course v-for=" (i) in (5-(courseCreatedAndIsNotTop.length + courseJoinedAndIsNotTop.length)%5)" :key="i"/>
+      <no-course v-for=" (i) in (5-(courseCreatedAndIsNotTop.length + courseJoinedAndIsNotTop.length+1)%5)" :key="i"/>
     </div>
 
     <!--对话框-->
@@ -286,11 +313,26 @@
         <el-button type="primary" @click="removeCourse">删 除</el-button>
       </div>
     </el-dialog>
+    <!--退课对话框-->
+    <el-dialog :visible.sync="dropCourseDialog" :append-to-body="true" width="30%">
+      <span class="remove-dialog-title">确定要退课”<span class="remove-title">{{ dropCourseTitle }}</span>“么？</span>
+      <br/><br>
+      您的这个课程的任何信息或评论将被永久删除<br/><br>
+      <span style="color: red">警告：此操作无法撤销</span><br/><br/>
+      <span style="color: blue">提醒：已用课程包含了“删除课程数”</span><br><br>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dropCourseDialog = false">取 消</el-button>
+        <el-button type="primary" @click="dropCourse">退 课</el-button>
+      </div>
+    </el-dialog>
+    <!-- 课程排序、归档窗口-->
+
   </div>
 </template>
 <script>
 
 import courseApi from '@/api/course/course'
+import userCourseApi from "@/api/course/userCourse";
 import noCourse from '@/components/noCourse'
 
 export default {
@@ -319,10 +361,14 @@ export default {
       },
       schoolYear: [],
 
-      //删除课程或退课
+      //删除课程
       removeCourseTitle: '',
       removeCourseDialog: false,
       removeCourseId: '',
+      //退课
+      dropCourseTitle: '',
+      dropCourseDialog: false,
+      dropCourseId: '',
 
       // 创建的置顶课程
       courseCreatedAndIsTop: [],
@@ -331,7 +377,12 @@ export default {
       // 加入的置顶课程
       courseJoinedAndIsTop: [],
       // 加入的非置顶课程
-      courseJoinedAndIsNotTop: []
+      courseJoinedAndIsNotTop: [],
+
+      //创建的归档课程
+      courseCreatedAndIsFiled: [],
+      //加入的归档课程
+      courseJoinedAndIsFiled: [],
     }
   },
   created() {
@@ -340,27 +391,81 @@ export default {
   },
   methods: {
 
+    /*控制课程排序、归档窗口*/
+    SortCourse() {
+      this.ShowSortAndGuiDang = true;
+      this.sortAndGuiDangPageIndex = "sort";
+    },
+    fileCourse() {
+      this.ShowSortAndGuiDang = true;
+      this.getFileCourses();
+      this.sortAndGuiDangPageIndex = "file";
+    },
+    getFileCourses() {
+
+    },
+    /*退课*/
+    dropCourse() {
+      userCourseApi.dropCourse(this.dropCourseId)
+        .then(res => {
+          this.$message.success(res.data.msg)
+          this.dropCourseDialog = false
+          this.getAllCourse(this.userId)
+        }).catch(err => {
+        this.$message.error(err.msg)
+      })
+    },
+
+    /*弹出退课对话框*/
+    popDropCourseDialog(course) {
+      this.dropCourseDialog = true
+      this.dropCourseId = course.id
+      this.dropCourseTitle = course.courseTitle
+    },
+
+    /*删除课程*/
     removeCourse() {
       courseApi.removeCourseCreated(this.removeCourseId)
         .then(res => {
           this.$message.success(res.data.msg)
           this.removeCourseDialog = false
           this.getAllCourse(this.userId)
-
         }).catch(err => {
         this.$message.error(err.msg)
       })
     },
 
+    /*弹出删除课程框*/
     popRemoveCourseDialog(course) {
       this.removeCourseDialog = true
       this.removeCourseId = course.id
       this.removeCourseTitle = course.courseTitle
     },
 
-    /*
-    * 置顶或取消置顶
-    * */
+    /*置顶或取消置顶加入的课程*/
+    topOrNotUserCourse(course) {
+      if (course.isTop === 0) { // 置顶课程取消置顶
+        userCourseApi.notTopCourse(course.id)
+          .then(res => {
+            this.getAllCourse(this.userId)
+            this.$message.success(res.data.msg)
+          })
+          .catch(err => {
+            this.$message.error(err.msg)
+          })
+      } else { // 非置顶课程置顶
+        userCourseApi.topCourse(course.id)
+          .then(res => {
+            this.getAllCourse(this.userId)
+            this.$message.success(res.data.msg)
+          })
+          .catch(err => {
+            this.$message.error(err.msg)
+          })
+      }
+    },
+
+    /*置顶或取消置顶创建课程*/
     topOrNotCourse(course) {
       if (course.isTop === 0) { // 置顶课程取消置顶
         courseApi.notTopCourse(course.id)
@@ -464,12 +569,11 @@ export default {
       })
     },
 
-    /*
-    * 获取所有课程
-    * */
+    /*获取所有课程*/
     getAllCourse(userId) {
       courseApi.getAllMyCourse(userId)
         .then(res => {
+          console.log(res)
           this.courseCreatedAndIsTop = res.data.data.items1
           this.courseCreatedAndIsNotTop = res.data.data.items2
           this.courseJoinedAndIsTop = res.data.data.items3
@@ -505,7 +609,7 @@ export default {
   float: right;
   height: 36px;
   line-height: 36px;
-  color: rgba(59, 61, 69, 1);
+  color: rgb(136, 137, 141);
 }
 
 .course-top {
@@ -549,6 +653,16 @@ export default {
 .fulImg {
   height: 95px;
   width: 100%;
+  border-radius: 4px 4px 0 0;
+  padding-top: 18px;
+  padding-bottom: 14px;
+}
+
+
+.create-filImg{
+  height: 95px;
+  width: 100%;
+  background-image: url('../assets/course/create-course.png');
   border-radius: 4px 4px 0 0;
   padding-top: 18px;
   padding-bottom: 14px;
@@ -643,18 +757,18 @@ export default {
 
 .course-foot {
   height: 30px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .course-foot span {
   line-height: 30px;
-
 }
 
 .is-top {
   font-size: 12px;
   color: #5f99a7;
   line-height: 30px;
-  margin-left: 80px;
   cursor: pointer;
 }
 
