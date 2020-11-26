@@ -1,24 +1,34 @@
 import request from '@/utils/request'
-
-// /front-edu/user-course
+let prefix ='/front-edu/user-course'
 export default {
   topCourse (id) {
     return request({
-      url: `/front-edu/user-course/topCourse/${id}`,
+      url: `${prefix}/topCourse/${id}`,
       method: 'get'
     })
   },
   notTopCourse (id) {
     return request({
-      url: `/front-edu/user-course/notTopCourse/${id}`,
+      url: `${prefix}/notTopCourse/${id}`,
       method: 'get'
     })
   },
   dropCourse(id){
     return request({
-      url:`/front-edu/user-course/dropCourse/${id}`,
+      url:`${prefix}/dropCourse/${id}`,
       method:'delete'
     })
+  },
+  fileSelf(id) {
+    return request({
+      url: `${prefix}/fileSelf/${id}`,
+      method: 'get'
+    })
+  },
+  recoverCourse(courseId){
+    return request({
+      url:`${prefix}/recoverCourse/${courseId}`,
+      method:'get'
+    })
   }
-
 }

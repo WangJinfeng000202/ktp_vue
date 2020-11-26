@@ -15,9 +15,9 @@
       </div>
       <!-- 课程排序/归档管理按钮-->
       <div class="sortAndGuiDang">
-        <span style="cursor: pointer;"><i class="el-icon-sort"></i>课程排序</span>
+        <span style="cursor: pointer" @click="popSortCourse"><i class="el-icon-sort"></i>课程排序</span>
         <span style="display:inline-block;width: 20px"></span>
-        <span style="cursor: pointer;"><i class="el-icon-files"></i>归档管理</span>
+        <span style="cursor: pointer" @click="popCourseFiled"><i class="el-icon-files"></i>归档管理</span>
       </div>
     </div>
     <!--置顶课程-->
@@ -31,7 +31,10 @@
         </div>
         <div :style="{backgroundImage:'url('+course.miniCover+')'}" class="fulImg">
           <div class="title-name">
-            <a class="course-title" href="#">{{ course.courseTitle }}</a><br/>
+            <router-link :to="'/Teacher/ClassInteract/'+course.id"  class="course-title" style="cursor: pointer">
+              {{ course.courseTitle }}
+            </router-link>
+            <br/>
             <span class="class-name">{{ course.className }}</span><br/>
           </div>
           <div>
@@ -76,7 +79,7 @@
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item><span @click="popUpdateCourseForm(course.id)">编辑</span></el-dropdown-item>
                 <el-dropdown-item><span @click="popRemoveCourseDialog(course)">删除</span></el-dropdown-item>
-                <el-dropdown-item><span>归档</span></el-dropdown-item>
+                <el-dropdown-item><span @click="popFileCourse(course)">归档</span></el-dropdown-item>
                 <el-dropdown-item>复制课程</el-dropdown-item>
                 <el-dropdown-item>打包下载</el-dropdown-item>
                 <el-dropdown-item>转让</el-dropdown-item>
@@ -88,8 +91,8 @@
       <!--加入的置顶课程-->
       <div class="course" v-for="(course) in courseJoinedAndIsTop">
         <div class="teach">
-          <div class="symbol">学</div>
-          <div class="tri"></div>
+          <div class="symbol2">学</div>
+          <div class="tri2"></div>
         </div>
         <div :style="{backgroundImage:'url('+course.miniCover+')'}" class="fulImg">
           <div class="title-name">
@@ -129,7 +132,7 @@
             <el-dropdown trigger="click" placement="top-end">
               <span class="more-op">更多<img src="@/assets/course/more.png" alt=""></span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item><span>归档</span></el-dropdown-item>
+                <el-dropdown-item><span @click="popFileCourse(course)">归档</span></el-dropdown-item>
                 <el-dropdown-item><span @click="popDropCourseDialog(course)">退课</span></el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -192,7 +195,7 @@
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item><span @click="popUpdateCourseForm(course.id)">编辑</span></el-dropdown-item>
                 <el-dropdown-item><span @click="popRemoveCourseDialog(course)">删除</span></el-dropdown-item>
-                <el-dropdown-item><span>归档</span></el-dropdown-item>
+                <el-dropdown-item><span @click="popFileCourse(course)">归档</span></el-dropdown-item>
                 <el-dropdown-item>复制课程</el-dropdown-item>
                 <el-dropdown-item>打包下载</el-dropdown-item>
                 <el-dropdown-item>转让</el-dropdown-item>
@@ -204,8 +207,8 @@
       <!--加入的非置顶课程-->
       <div class="course" v-for="(course) in courseJoinedAndIsNotTop">
         <div class="teach">
-          <div class="symbol">学</div>
-          <div class="tri"></div>
+          <div class="symbol2">学</div>
+          <div class="tri2"></div>
         </div>
         <div :style="{backgroundImage:'url('+course.miniCover+')'}" class="fulImg">
           <div class="title-name">
@@ -244,23 +247,25 @@
               <span class="more-op">更多<img src="@/assets/course/more.png" alt=""></span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item><span @click="popDropCourseDialog(course)">退课</span></el-dropdown-item>
-                <el-dropdown-item><span>归档</span></el-dropdown-item>
+                <el-dropdown-item><span @click="popFileCourse(course)">归档</span></el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
         </div>
       </div>
       <div class="course">
-        <div class="fulImg"></div>
-        <div style="width: 100%">
-          <div style="font-size: 25px">+</div>
-          <div>创建课程</div>
+        <div class="create-filImg"></div>
+        <div style="width: 100%;height: 149px;display: flex;align-items: center;justify-content: center"
+             @click="popCreateCourseForm">
+          <div style="text-align: center">
+            <div style="font-size: 25px">+</div>
+            <div>创建课程</div>
+          </div>
         </div>
       </div>
       <!--占位样式-->
       <no-course v-for=" (i) in (5-(courseCreatedAndIsNotTop.length + courseJoinedAndIsNotTop.length+1)%5)" :key="i"/>
     </div>
-
     <!--对话框-->
     <!--新建/修改课程窗口-->
     <el-dialog :title="createOrUpdateTitle" :visible.sync="dialogFormVisible" append-to-body>
@@ -325,7 +330,72 @@
         <el-button type="primary" @click="dropCourse">退 课</el-button>
       </div>
     </el-dialog>
+
+    <!--归档列表-->
     <!-- 课程排序、归档窗口-->
+    <div class="sortAndGuiDangPge" v-show="showSortAndGuiDang">
+      <div class="sortAndGuiDangPgeHead">
+        <i class="el-icon-close" style="position: absolute;right: 26px;top: 10px;cursor: pointer;z-index: 10"
+           @click="sortCourse"></i>
+        <el-tabs v-model="sortAndGuiDangIndex" type="border-card" @tab-click="handleClick">
+          <el-tab-pane label="课程排序" name="sort">
+            <div style="list-style: none;height: 540px; overflow:auto;">
+              <li class="sli" draggable="true"
+                  @dragstart="" @dragenter="" @dragend="">
+                <i class="sPoint"></i>
+              </li>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="归档管理" name="file">
+            <div class="fileCourseList">
+              <!--创建的课程-->
+              <li class="fileCourse" v-for="(course) in courseCreatedAndIsFiled">
+                <div :style="{backgroundImage:'url('+course.cover+')'}" class="fileCourseImg">
+                  <strong style="float: left">
+                    <a style="font-size: 18px">{{ course.courseTitle }}</a>
+                    <span style="font-size: 12px">角色:老师</span>
+                  </strong>
+                  <el-dropdown placement="bottom-end" style="float: right">
+                    <i class="iconMenu"></i>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item><span @click="recover(course)">恢复</span></el-dropdown-item>
+                      <el-dropdown-item><span @click="popRemoveCourseDialog(course)">删除</span></el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </div>
+              </li>
+              <!--加入的课程-->
+              <li class="fileCourse" v-for="(course) in courseJoinedAndIsFiled">
+                <div :style="{backgroundImage:'url('+course.cover+')'}" class="fileCourseImg">
+                  <strong style="float: left">
+                    <a style="font-size: 18px">{{ course.courseTitle }}</a>
+                    <span style="font-size: 12px">角色：学生 教师：{{ course.teacherName }}</span>
+                  </strong>
+                  <el-dropdown placement="bottom-end" style="float: right">
+                    <i class="iconMenu"></i>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item><span @click="recover(course)">恢复</span></el-dropdown-item>
+                      <el-dropdown-item><span @click="popDropCourseDialog(course)">退课</span></el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </div>
+              </li>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+    </div>
+    <!--归档对话框-->
+    <el-dialog title="要归档此课程吗？" :visible.sync="fileDialogVisible" width="30%" center :close-on-click-modal="false">
+      <p>您可以在"课堂"-"归档管理"中查看此课程</p>
+      <p>【归档全部】，学生的课程也会一起被归档</p>
+      <p>【归档自己】，学生的课程不会被归档</p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="fileDialogVisible = false">取 消</el-button>
+        <el-button v-if="courseType === 't'" @click="fileCourseAll(fileCourseId)">归档全部</el-button>
+        <el-button type="primary" @click="fileCourseSelf(fileCourseId)">归档自己</el-button>
+      </span>
+    </el-dialog>
 
   </div>
 </template>
@@ -370,6 +440,13 @@ export default {
       dropCourseDialog: false,
       dropCourseId: '',
 
+      //归档全部
+      fileDialogVisible: false,
+      courseType: '',
+      fileCourseId: '',
+      showSortAndGuiDang: false,
+      sortAndGuiDangIndex: '',
+
       // 创建的置顶课程
       courseCreatedAndIsTop: [],
       // 创建的非置顶课程
@@ -391,19 +468,105 @@ export default {
   },
   methods: {
 
-    /*控制课程排序、归档窗口*/
-    SortCourse() {
-      this.ShowSortAndGuiDang = true;
-      this.sortAndGuiDangPageIndex = "sort";
+    //恢复课程
+    recover(course) {
+      if (course.teacherName) {
+        userCourseApi.recoverCourse(course.id)
+          .then(res => {
+            this.$message.success(res.data.msg)
+            this.showSortAndGuiDang = false
+            this.getAllFiledCourse()
+            this.getAllCourse(this.userId)
+          })
+          .catch(err => {
+            this.$message.error(err.msg)
+          })
+      } else {
+        courseApi.recoverCourse(course.id)
+          .then(res => {
+            this.showSortAndGuiDang = false
+            this.$message.success(res.data.msg)
+            this.getAllFiledCourse()
+            this.getAllCourse(this.userId)
+          })
+          .catch(err => {
+            this.$message.error(err.msg)
+          })
+      }
     },
-    fileCourse() {
-      this.ShowSortAndGuiDang = true;
-      this.getFileCourses();
-      this.sortAndGuiDangPageIndex = "file";
+    //popSore
+    popSortCourse() {
+      this.showSortAndGuiDang = true
+      this.sortAndGuiDangIndex = 'sort'
     },
-    getFileCourses() {
+    //popFile
+    popCourseFiled() {
+      this.showSortAndGuiDang = true
+      this.sortAndGuiDangIndex = 'file'
+      this.getAllFiledCourse()
+    },
 
+    handleClick(tab, event) {
+      if (tab.name === 'file') {
+        this.getAllFiledCourse()
+      } else {
+
+      }
     },
+    getAllFiledCourse() {
+      //获取所有归档的课程
+      courseApi.getAllCourseFiled(this.userId).then(res => {
+        console.log(res)
+        this.courseCreatedAndIsFiled = res.data.data.items1
+        this.courseJoinedAndIsFiled = res.data.data.items2
+      }).catch(err => {
+        this.$message.error(err.msg)
+      })
+    }
+    ,
+    sortCourse() {
+      this.showSortAndGuiDang = false
+    },
+    // 弹出归档对话框
+    popFileCourse(course) {
+      this.courseType = course.courseId ? 's' : 't'
+      this.fileCourseId = course.id
+      this.fileDialogVisible = true
+    },
+    //归档自己
+    fileCourseSelf(id) {
+      if (this.courseType === 't') {
+        courseApi.fileSelf(id)
+          .then(res => {
+            this.$message.success(res.data.msg)
+            this.fileDialogVisible = false
+            this.getAllCourse(this.userId)
+          }).catch(err => {
+          this.$message.error(err.msg)
+        })
+      } else {
+        userCourseApi.fileSelf(id)
+          .then(res => {
+            this.$message.success(res.data.msg)
+            this.fileDialogVisible = false
+            this.getAllCourse(this.userId)
+          }).catch(err => {
+          this.$message.error(err.msg)
+        })
+      }
+    },
+    //归档全部
+    fileCourseAll(id) {
+      courseApi.fileAll(id)
+        .then(res => {
+          this.$message.success(res.data.msg)
+          this.fileDialogVisible = false
+          this.getAllCourse(this.userId)
+        }).catch(err => {
+        this.$message.error(err.msg)
+      })
+    },
+
     /*退课*/
     dropCourse() {
       userCourseApi.dropCourse(this.dropCourseId)
@@ -411,6 +574,8 @@ export default {
           this.$message.success(res.data.msg)
           this.dropCourseDialog = false
           this.getAllCourse(this.userId)
+          this.getAllFiledCourse()
+          this.showSortAndGuiDang = false
         }).catch(err => {
         this.$message.error(err.msg)
       })
@@ -430,6 +595,8 @@ export default {
           this.$message.success(res.data.msg)
           this.removeCourseDialog = false
           this.getAllCourse(this.userId)
+          this.getAllFiledCourse()
+          this.showSortAndGuiDang = false
         }).catch(err => {
         this.$message.error(err.msg)
       })
@@ -573,7 +740,6 @@ export default {
     getAllCourse(userId) {
       courseApi.getAllMyCourse(userId)
         .then(res => {
-          console.log(res)
           this.courseCreatedAndIsTop = res.data.data.items1
           this.courseCreatedAndIsNotTop = res.data.data.items2
           this.courseJoinedAndIsTop = res.data.data.items3
@@ -659,10 +825,10 @@ export default {
 }
 
 
-.create-filImg{
+.create-filImg {
   height: 95px;
   width: 100%;
-  background-image: url('../assets/course/create-course.png');
+  background-image: url('../../assets/course/create-course.png');
   border-radius: 4px 4px 0 0;
   padding-top: 18px;
   padding-bottom: 14px;
@@ -716,11 +882,33 @@ export default {
   text-align: center;
 }
 
+.symbol2 {
+  line-height: 22px;
+  font-size: 14px;
+  color: white;
+  background-color: #32baf0;
+  font-family: PingFangSC-Medium;
+  font-weight: 500;
+  width: 20px;
+  text-align: center;
+}
+
 .tri {
   width: 0;
   height: 0;
   border-left: 10px solid #fff;
   border-right: 10px solid #fff;
+  border-bottom: 4px solid transparent;
+  z-index: 1;
+  top: 21px;
+  left: 15px;
+}
+
+.tri2 {
+  width: 0;
+  height: 0;
+  border-left: 10px solid #32baf0;
+  border-right: 10px solid #32baf0;
   border-bottom: 4px solid transparent;
   z-index: 1;
   top: 21px;
@@ -810,4 +998,74 @@ export default {
   display: inline-block;
 }
 
+.sortAndGuiDangPge {
+  width: 800px;
+  height: 600px;
+  background: #fff;
+  border: 1px solid #dcdcdc;
+  left: 25%;
+  top: 5%;
+  position: absolute;
+  z-index: 101;
+}
+
+.sortAndGuiDangPgeHead {
+  background: #f8f8f8;
+  height: 44px;
+  width: 100%;
+  font-size: 30px;
+}
+
+.fileCourseList {
+  position: relative;
+  height: 540px;
+  overflow: auto;
+  display: flex;
+  align-content: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 0 60px;
+  list-style: none;
+}
+
+.fileCourse {
+  width: 300px;
+  position: relative;
+  margin: 15px 10px;
+}
+
+.fileCourseImg {
+  height: 110px;
+  width: 100%;
+}
+
+.iconMenu {
+  float: right;
+  width: 32px;
+  height: 32px;
+  background: url('../../assets/course/icon-menu.png') center center no-repeat;
+  margin-top: 40px;
+}
+
+strong a {
+  color: #fff;
+  font-size: 20px;
+  line-height: 30px;
+  margin-top: 20px;
+  display: block;
+  padding-left: 10px;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+strong span {
+  font-weight: normal;
+  display: block;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 1);
+  line-height: 28px;
+  overflow: hidden;
+  margin-top: 10px;
+  padding-left: 10px;
+}
 </style>

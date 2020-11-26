@@ -1,55 +1,88 @@
 import request from '@/utils/request'
 
+let prefix = '/front-edu/course'
+
 export default {
-  getAllMyCourse (userId) {
+  getAllMyCourse(userId) {
     return request({
-      url: `/front-edu/course/getAllMyCourse/${userId}`,
+      url: `${prefix}/getAllMyCourse/${userId}`,
       method: 'get'
     })
   },
-  joinCourse (joinCourseInfo) {
+  joinCourse(joinCourseInfo) {
     return request({
-      url: '/front-edu/course/joinCourse',
+      url: `${prefix}/joinCourse`,
       method: 'post',
       data: joinCourseInfo
     })
   },
-  createCourse (createCourseInfo) {
+  createCourse(createCourseInfo) {
     return request({
-      url: '/front-edu/course/createCourse',
+      url: `${prefix}/createCourse`,
       method: 'post',
       data: createCourseInfo
     })
   },
-  topCourse (courseId) {
+  topCourse(courseId) {
     return request({
-      url: `/front-edu/course/topCourse/${courseId}`,
+      url: `${prefix}/topCourse/${courseId}`,
       method: 'get'
     })
   },
-  notTopCourse (courseId) {
+  notTopCourse(courseId) {
     return request({
-      url: `/front-edu/course/notTopCourse/${courseId}`,
+      url: `${prefix}/notTopCourse/${courseId}`,
       method: 'get'
     })
   },
-  getById (courseId) {
+  getById(courseId) {
     return request({
-      url: `/front-edu/course/getCourseInfo/${courseId}`,
+      url: `${prefix}/getCourseInfo/${courseId}`,
       method: 'get'
     })
   },
-  updateCourse (courseInfo) {
+  getDetailById(courseId) {
     return request({
-      url: '/front-edu/course/updateCourse',
+      url: `${prefix}/getCourseDetailInfo/${courseId}`,
+      method: 'get'
+    })
+  },
+
+  updateCourse(courseInfo) {
+    return request({
+      url: `${prefix}/updateCourse`,
       method: 'post',
       data: courseInfo
     })
   },
-  removeCourseCreated(courseId){
+  removeCourseCreated(courseId) {
     return request({
-      url:`/front-edu/course/removeCourse/${courseId}`,
-      method:'delete'
+      url: `${prefix}/removeCourse/${courseId}`,
+      method: 'delete'
+    })
+  },
+  fileAll(id) {
+    return request({
+      url: `${prefix}/fileAll/${id}`,
+      method: 'get'
+    })
+  },
+  fileSelf(id) {
+    return request({
+      url: `${prefix}/fileSelf/${id}`,
+      method: 'get'
+    })
+  },
+  getAllCourseFiled(userId){
+    return request({
+      url:`${prefix}/getAllCourseFiled/${userId}`,
+      method:'get'
+    })
+  },
+  recoverCourse(courseId){
+    return request({
+      url:`${prefix}/recoverCourse/${courseId}`,
+      method:'get'
     })
   }
 }

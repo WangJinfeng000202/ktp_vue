@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -15,8 +16,23 @@ const routes = [
     children: [{
       path: 'index',
       name: 'courses',
-      component: () => import('@/views/courseList')
+      component: () => import('@/views/teacher/courseList')
     }]
+  },
+  {
+    path: '/Teacher',
+    name: 'teacher',
+    component: () => import('@/views/teacher/course'),
+    children: [{
+      path: 'classInteract/:id',
+      name: 'ClassInteract',
+      component: () => import('@/views/teacher/interact')
+    }, {
+      path: 'assignment/:id',
+      name: 'Assignment',
+      component: () => import('@/views/teacher/assignment')
+    }
+    ]
   }
 ]
 
