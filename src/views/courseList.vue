@@ -31,7 +31,7 @@
         </div>
         <div :style="{backgroundImage:'url('+course.miniCover+')'}" class="fulImg">
           <div class="title-name">
-            <router-link :to="'/Teacher/ClassInteract/'+course.id"  class="course-title" style="cursor: pointer">
+            <router-link :to="'/Teacher/ClassInteract/'+course.id" class="course-title" style="cursor: pointer">
               {{ course.courseTitle }}
             </router-link>
             <br/>
@@ -152,7 +152,7 @@
         </div>
         <div :style="{backgroundImage:'url('+course.miniCover+')'}" class="fulImg">
           <div class="title-name">
-            <a class="course-title" href="#">{{ course.courseTitle }}</a><br/>
+            <router-link class="course-title" :to="'/Teacher/ClassInteract/'+course.id">{{ course.courseTitle }}</router-link><br/>
             <span class="class-name">{{ course.className }}</span><br/>
           </div>
           <div>
@@ -402,14 +402,14 @@
 <script>
 
 import courseApi from '@/api/course/course'
-import userCourseApi from "@/api/course/userCourse";
+import userCourseApi from '@/api/course/userCourse'
 import noCourse from '@/components/noCourse'
 
 export default {
   name: 'courseList',
-  components: {noCourse},
+  components: { noCourse },
 
-  data() {
+  data () {
     return {
       userId: 'string',
       // 加入课程对话框
@@ -462,14 +462,14 @@ export default {
       courseJoinedAndIsFiled: [],
     }
   },
-  created() {
+  created () {
     this.getAllCourse(this.userId)
     this.generateSchoolYear()
   },
   methods: {
 
     //恢复课程
-    recover(course) {
+    recover (course) {
       if (course.teacherName) {
         userCourseApi.recoverCourse(course.id)
           .then(res => {
@@ -495,25 +495,25 @@ export default {
       }
     },
     //popSore
-    popSortCourse() {
+    popSortCourse () {
       this.showSortAndGuiDang = true
       this.sortAndGuiDangIndex = 'sort'
     },
     //popFile
-    popCourseFiled() {
+    popCourseFiled () {
       this.showSortAndGuiDang = true
       this.sortAndGuiDangIndex = 'file'
       this.getAllFiledCourse()
     },
 
-    handleClick(tab, event) {
+    handleClick (tab, event) {
       if (tab.name === 'file') {
         this.getAllFiledCourse()
       } else {
 
       }
     },
-    getAllFiledCourse() {
+    getAllFiledCourse () {
       //获取所有归档的课程
       courseApi.getAllCourseFiled(this.userId).then(res => {
         console.log(res)
@@ -524,17 +524,17 @@ export default {
       })
     }
     ,
-    sortCourse() {
+    sortCourse () {
       this.showSortAndGuiDang = false
     },
     // 弹出归档对话框
-    popFileCourse(course) {
+    popFileCourse (course) {
       this.courseType = course.courseId ? 's' : 't'
       this.fileCourseId = course.id
       this.fileDialogVisible = true
     },
     //归档自己
-    fileCourseSelf(id) {
+    fileCourseSelf (id) {
       if (this.courseType === 't') {
         courseApi.fileSelf(id)
           .then(res => {
@@ -556,7 +556,7 @@ export default {
       }
     },
     //归档全部
-    fileCourseAll(id) {
+    fileCourseAll (id) {
       courseApi.fileAll(id)
         .then(res => {
           this.$message.success(res.data.msg)
@@ -568,7 +568,7 @@ export default {
     },
 
     /*退课*/
-    dropCourse() {
+    dropCourse () {
       userCourseApi.dropCourse(this.dropCourseId)
         .then(res => {
           this.$message.success(res.data.msg)
@@ -582,14 +582,14 @@ export default {
     },
 
     /*弹出退课对话框*/
-    popDropCourseDialog(course) {
+    popDropCourseDialog (course) {
       this.dropCourseDialog = true
       this.dropCourseId = course.id
       this.dropCourseTitle = course.courseTitle
     },
 
     /*删除课程*/
-    removeCourse() {
+    removeCourse () {
       courseApi.removeCourseCreated(this.removeCourseId)
         .then(res => {
           this.$message.success(res.data.msg)
@@ -603,14 +603,14 @@ export default {
     },
 
     /*弹出删除课程框*/
-    popRemoveCourseDialog(course) {
+    popRemoveCourseDialog (course) {
       this.removeCourseDialog = true
       this.removeCourseId = course.id
       this.removeCourseTitle = course.courseTitle
     },
 
     /*置顶或取消置顶加入的课程*/
-    topOrNotUserCourse(course) {
+    topOrNotUserCourse (course) {
       if (course.isTop === 0) { // 置顶课程取消置顶
         userCourseApi.notTopCourse(course.id)
           .then(res => {
@@ -633,7 +633,7 @@ export default {
     },
 
     /*置顶或取消置顶创建课程*/
-    topOrNotCourse(course) {
+    topOrNotCourse (course) {
       if (course.isTop === 0) { // 置顶课程取消置顶
         courseApi.notTopCourse(course.id)
           .then(res => {
@@ -656,7 +656,7 @@ export default {
     },
 
     /* 创建或修改课程 */
-    createOrUpdateCourse() {
+    createOrUpdateCourse () {
       this.createCourseForm.userId = this.userId
       if (this.createCourseForm.id) { // 如果存在id则执行修改
         courseApi.updateCourse(this.createCourseForm)
@@ -682,7 +682,7 @@ export default {
     },
 
     /* 弹出课程创建 */
-    popCreateCourseForm() {
+    popCreateCourseForm () {
       this.createOrUpdateTitle = '创建课程'
       this.dialogFormVisible = true
       this.createCourseForm = {}
@@ -690,7 +690,7 @@ export default {
       this.createCourseForm.semester = 1
     },
     /* 弹出编辑课程 */
-    popUpdateCourseForm(courseId) {
+    popUpdateCourseForm (courseId) {
       this.createOrUpdateTitle = '编辑课程'
       this.dialogFormVisible = true
       courseApi.getById(courseId)
@@ -702,7 +702,7 @@ export default {
     },
 
     /* 生成学年 */
-    generateSchoolYear() {
+    generateSchoolYear () {
       const schoolYear = []
       const currentYear = new Date().getFullYear()
       const maxYear = currentYear + 3
@@ -715,13 +715,13 @@ export default {
     },
 
     /* 加入课程弹窗 */
-    popJoinCourse() {
+    popJoinCourse () {
       this.joinCourseDialogVisible = true
       this.joinCourseCode = ''
     },
 
     /* 加入课程 */
-    joinCourse() {
+    joinCourse () {
       this.joinCourseDialogVisible = false
       const joinCourseInfo = {}
       joinCourseInfo.userId = this.userId
@@ -737,7 +737,7 @@ export default {
     },
 
     /*获取所有课程*/
-    getAllCourse(userId) {
+    getAllCourse (userId) {
       courseApi.getAllMyCourse(userId)
         .then(res => {
           this.courseCreatedAndIsTop = res.data.data.items1
@@ -828,7 +828,7 @@ export default {
 .create-filImg {
   height: 95px;
   width: 100%;
-  background-image: url('../../assets/course/create-course.png');
+  background-image: url('../assets/course/create-course.png');
   border-radius: 4px 4px 0 0;
   padding-top: 18px;
   padding-bottom: 14px;
@@ -1043,7 +1043,7 @@ export default {
   float: right;
   width: 32px;
   height: 32px;
-  background: url('../../assets/course/icon-menu.png') center center no-repeat;
+  background: url('../assets/course/icon-menu.png') center center no-repeat;
   margin-top: 40px;
 }
 

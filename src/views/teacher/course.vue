@@ -4,7 +4,7 @@
       <el-menu class="nav-menu-left" mode="horizontal" menu-trigger="click" router>
         <el-menu-item><i class="el-icon-s-fold"></i></el-menu-item>
         <el-menu-item>
-          <router-link to="/TeacherMain/ClassListPage" style="text-decoration: none;">课堂</router-link>
+          <router-link to="/Main/index" style="text-decoration: none;">课堂</router-link>
         </el-menu-item>
       </el-menu>
       <span style="line-height: 65px;">{{ course.courseTitle }}  {{ course.className }}</span>
@@ -103,28 +103,34 @@
 </template>
 
 <script>
-import courseApi from "@/api/course/course"
-import {mapGetters} from 'vuex'
+import courseApi from '@/api/course/course'
+import { mapGetters } from 'vuex'
 
 export default {
-  name: "Course",
-  data() {
+  name: 'Course',
+  data () {
     return {
       activeNavIndex: '课堂互动',
       courseId: '',
       user: {},
       course: {},
-      homeworkNum: '',
-    };
+      homeworkNum: ''
+    }
   },
-  created() {
+  created () {
     this.user = this.getUserInfo()
     this.courseId = this.$route.params.id
     this.getCourseDetailInfo(this.courseId)
   },
+  mounted () {
+    const _this = this
+    _this.$root.$on('next', function (courseId) {
+      _this.getCourseDetailInfo(courseId)
+    })
+  },
   methods: {
     ...mapGetters(['getUserInfo']),
-    getCourseDetailInfo(courseId) {
+    getCourseDetailInfo (courseId) {
       courseApi.getDetailById(courseId)
         .then(res => {
           this.course = res.data.data.item

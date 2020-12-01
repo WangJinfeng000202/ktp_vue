@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-let prefix = '/front-edu/course'
+const prefix = '/front-edu/course'
 
 export default {
   getAllMyCourse(userId) {

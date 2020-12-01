@@ -24,22 +24,21 @@
     <!-- 个人作业创建窗口-->
     <div class="publishHomework" v-show="personalWorkPage">
       <el-form ref="form" :model="newHomework" label-width="80px" style="font-size: 20px">
-        <el-input v-model="newHomework.title" placeholder="作业名称" style="width: 100%;"></el-input>
-
+        <el-input v-model="newHomework.assignmentTitle" placeholder="作业名称" style="width: 100%;"></el-input>
         <div style="height:130px;margin-top: 20px;margin-bottom: 60px;font-size: 12px;">
-          <Tinymce/>
+          <el-input type="textarea" v-model="newHomework.briefIntroduction" :rows="8"></el-input>
         </div>
         <el-form-item label="截止日期:">
-          <el-date-picker v-model="newHomework.endDate" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"
+          <el-date-picker v-model="newHomework.deadline" value-format="yyyy-MM-dd HH:mm:ss" type="datetime"
+                          placeholder="选择日期"
                           style="width: 300px;">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="满分值:">
-          <el-input v-model="newHomework.fullMarks" style="width: 60px;"></el-input>
+          <el-input v-model="newHomework.fullMark" style="width: 60px;"></el-input>
         </el-form-item>
         <el-form-item label="是否查重">
-          <el-switch v-model="switchValue">
-          </el-switch>
+          <el-switch v-model="switchValue"></el-switch>
           <div v-show="switchValue">
             查重警戒值:
             <el-input placeholder="50" style="width: 50px;"></el-input>
@@ -54,17 +53,16 @@
       <el-upload class="upload" action=""><i class="el-icon-download"></i>导入作业</el-upload>
       <div style="float: right">
         <el-button @click="personalWorkPage=false; activeButtonPersona=''">取消</el-button>
-        <el-button type="primary" v-show="personalHButton">发布个人作业</el-button>
+        <el-button type="primary" v-show="personalHButton" @click="publishAssignment">发布个人作业</el-button>
         <el-button type="primary" v-show="updateButton">保存</el-button>
-
       </div>
     </div>
     <!-- 小组作业创建窗口-->
     <div class="publishHomework" v-show="teamWorkPage">
       <el-form ref="form" :model="newHomework" label-width="100px" style="font-size: 20px">
-        <el-input v-model="newHomework.title" placeholder="作业名称" style="width: 100%;"></el-input>
+        <el-input v-model="newHomework.assignmentTitle" placeholder="作业名称" style="width: 100%;"></el-input>
         <div style="height:130px;margin-top: 20px;margin-bottom: 60px;font-size: 12px;">
-
+          <el-input type="textarea" v-model="newHomework.briefIntroduction" :rows="8"></el-input>
         </div>
         <el-form-item label="选择分组批次:">
           <el-select placeholder="请选择分组" value="">
@@ -73,12 +71,13 @@
           </el-select>
         </el-form-item>
         <el-form-item label="截止日期:">
-          <el-date-picker v-model="newHomework.endDate" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"
+          <el-date-picker v-model="newHomework.deadline" value-format="yyyy-MM-dd HH:mm:ss" type="date"
+                          placeholder="选择日期"
                           style="width: 300px;">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="满分值:">
-          <el-input v-model="newHomework.fullMarks" style="width: 60px;"></el-input>
+          <el-input v-model="newHomework.fullMark" style="width: 60px;"></el-input>
           <span style="font-size: 10px;">注：同一分组内，任一学生所交作业都将记为小组作业，组内成员作业共享。</span>
         </el-form-item>
         <el-form-item label="是否查重">
@@ -103,53 +102,58 @@
     </div>
     <!-- 作业显示列表-->
     <div class="homework">
-      <ul style="list-style: none;">
-        <li v-for="(item) in assignments" class="hli">
-          <div style="display: flex;flex-direction: column;">
-            <div class="Htype">
-              <span class="HtypeSpan">{{ item.assignment.type }}</span>
-              <span style="padding-left: 10px;">{{ item.assignment.startDate }}</span>
-
-              <el-dropdown placement="bottom-end" style="float: right">
-                <i class="el-icon-more" style="cursor: pointer;font-size: 20px;"></i>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item><span>编辑</span></el-dropdown-item>
-                  <el-dropdown-item><span>保存到...</span></el-dropdown-item>
-                  <el-dropdown-item><span>删除</span></el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
-
-            <div>
-              <div style="width: 100%;height: auto;padding-top: 10px">
-                <div style="float: left;">
+      <div v-for="(item,index) in assignments" class="hli" :key="index">
+        <div style="display: flex;flex-direction: column;">
+          <div class="Htype">
+            <span class="HtypeSpan">
+                {{ item.type === 0 ? '个人作业' : '小组作业' }}
+            </span>
+            <span style="padding-left: 10px;">{{ item.gmtCreate }}</span>
+            <el-dropdown placement="bottom-end" style="float: right">
+              <i class="el-icon-more" style="cursor: pointer;font-size: 20px;"></i>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item><span @click="popModifyAssignment(item)">编辑</span></el-dropdown-item>
+                <el-dropdown-item><span>保存到...</span></el-dropdown-item>
+                <el-dropdown-item><span @click="popRemoveAssignment(item.id)">删除</span></el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+          <div>
+            <div style="width: 100%;height: auto;padding-top: 10px">
+              <div style="float: left;">
                   <span
-                    style="cursor:pointer;font-size: 20px;font-weight: 400;">{{ item.assignment.title }}</span><br><br>
-                  <span v-html="item.assignment.content">{{ item.assignment.content }}</span>
+                    class="assignment-title">{{ item.assignmentTitle }}</span><br><br>
+                <span>{{ item.briefIntroduction?item.briefIntroduction:'如题所述'}}</span>
+              </div>
+              <div class="courseDataBox">
+                <div class="courseDataBoxSon">
+                  <span style="font-size: 40px;font-weight: 300;">
+                    {{ item.reviewNum == null ? 0 : item.reviewNum }}
+                  </span>
+                  <span>已批</span>
                 </div>
-                <div class="courseDataBox">
-                  <div class="courseDataBoxSon">
-                    <span style="font-size: 40px;font-weight: 300;">{{ item.assignment.pNum }}</span>
-                    <span style="font-size: 12px;">已批</span>
-                  </div>
-                  <div class="courseDataBoxSon">
-                    <span style="font-size: 40px;font-weight: 300;">{{ item.assignment.upNum }}</span>
-                    <span style="font-size: 12px;">未批</span>
-                  </div>
-                  <div class="courseDataBoxSon">
-                    <span style="font-size: 40px;font-weight: 300;">{{ item.assignment.ufNum }}</span>
-                    <span style="font-size: 12px;color: #ff4e1b">未交</span>
-                  </div>
+                <div class="courseDataBoxSon">
+                  <span style="font-size: 40px;font-weight: 300;">{{
+                      item.notReviewNum == null ? 0 : item.notReviewNum
+                    }}</span>
+                  <span>未批</span>
+                </div>
+                <div class="courseDataBoxSon">
+                  <span
+                    style="font-size: 40px;font-weight: 300;">{{
+                      item.notSubmitNum == null ? 0 : item.notSubmitNum
+                    }}</span>
+                  <span style="color: #ff4e1b">未交</span>
                 </div>
               </div>
             </div>
-            <div class="Htype">
-              <span>截止日期: {{ item.assignment.endDate }}</span>
-              <span style="padding-left: 10px;">0条讨论</span>
-            </div>
           </div>
-        </li>
-      </ul>
+          <div class="Htype">
+            <span>截止日期: {{ item.deadline }}</span>
+            <span style="padding-left: 10px;">0条讨论</span>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- 页脚信息-->
     <div class="footer">
@@ -162,85 +166,167 @@
     <el-dialog title="确定要删除该作业?" :visible.sync="deleteHWDialogVisible" width="30%" center :append-to-body="true">
         <span slot="footer" class="dialog-footer">
           <el-button @click="deleteHWDialogVisible = false">取 消</el-button>
-          <el-button type="primary">确定</el-button>
+          <el-button type="primary" @click="removeAssignment">确定</el-button>
         </span>
     </el-dialog>
-
   </div>
 </template>
 
 <script>
-import Tinymce from '@/components/Tinymce'
-export default {
-  name: "assignment",
-  components:{
-    Tinymce
-  },
-  data() {
-    return {
+import assignmentApi from '@/api/assignment/assignment'
+import { mapGetters } from 'vuex'
 
-      /*个人作业创建界面显示*/
+export default {
+  name: 'assignment',
+  data () {
+    return {
+      /* 个人作业创建界面显示 */
       personalWorkPage: false,
-      /*小组作业创建界面显示*/
+      /* 小组作业创建界面显示 */
       teamWorkPage: false,
-      /*按钮状态*/
+      /* 按钮状态 */
       activeButtonPersona: '',
       activeButtonTeam: '',
-      /*该课程作业列表*/
+      /* 该课程作业列表 */
       assignments: [],
-      /*新作业存储数组*/
-      newHomework: {},
-      /*查重开关*/
+      /* 新作业存储数组 */
+      newHomework: {
+        courseId: '',
+        userId: '',
+        assignmentTitle: '',
+        briefIntroduction: '',
+        deadline: '',
+        fullMark: '',
+        type: ''
+      },
+      /* 查重开关 */
       switchValue: false,
-      /*该课程人数*/
+      /* 该课程人数 */
       classMembers: 0,
       personalHButton: false,
       updateButton: false,
-      homeworkId: 0,
+      assignmentId: '',
       deleteHWDialogVisible: false,
       courseId: '',
+      user: {}
     }
   },
   methods: {
-    /*展开发布个人作业窗口*/
-    ShowPersonalWorkPage: function () {
-      this.newHomework.type = '个人作业';
-      this.personalWorkPage = true;
-      this.personalHButton = true;
-      this.updateButton = false;
-      this.teamWorkPage = false;
-      this.activeButtonPersona = 'primary';
-      this.activeButtonTeam = '';
-      this.newHomework.title = '';
-      this.newHomework.content = '';
-      this.newHomework.endDate = '';
-      this.newHomework.fullMarks = '';
+    /* 展开发布个人作业窗口 */
+    ShowPersonalWorkPage () {
+      this.newHomework.type = 0
+      this.personalWorkPage = true
+      this.personalHButton = true
+      this.updateButton = false
+      this.teamWorkPage = false
+      this.activeButtonPersona = 'primary'
+      this.activeButtonTeam = ''
+      this.newHomework.assignmentTitle = ''
+      this.newHomework.briefIntroduction = ''
+      this.newHomework.deadline = ''
+      this.newHomework.fullMark = ''
     },
-    /*展开发布小组作业窗口*/
-    ShowTeamWorkPage: function () {
-      this.newHomework.type = '小组作业';
-      this.teamWorkPage = true;
-      this.personalWorkPage = false;
-      this.activeButtonPersona = '';
-      this.activeButtonTeam = 'primary';
-      this.newHomework.title = '';
-      this.newHomework.content = '';
-      this.newHomework.endDate = '';
-      this.newHomework.fullMarks = '';
+
+    /* 展开发布小组作业窗口 */
+    ShowTeamWorkPage () {
+      this.newHomework.type = 1
+      this.teamWorkPage = true
+      this.personalWorkPage = false
+      this.activeButtonPersona = ''
+      this.activeButtonTeam = 'primary'
+      this.newHomework.assignmentTitle = ''
+      this.newHomework.briefIntroduction = ''
+      this.newHomework.deadline = ''
+      this.newHomework.fullMark = ''
     },
-    /*发布作业*/
 
-    /*编辑作业*/
+    /* 修改作业 */
+    popModifyAssignment (assignment) {
+      if (assignment.type === 0) {
+        this.ShowPersonalWorkPage()
+        assignmentApi.getById(assignment.id)
+          .then(res => {
+            this.newHomework = res.data.data.item
+          })
+          .catch(err => {
+            this.$message.error(err.msg)
+          })
+      } else {
+        this.ShowTeamWorkPage()
+      }
+    },
 
+    /* 发布修改作业 */
+    publishAssignment () {
+      this.newHomework.courseId = this.courseId
+      this.newHomework.userId = this.user.userId
+      if (this.newHomework.id) { // 如果有id，执行修改
+        assignmentApi.modifyAssignment(this.newHomework)
+          .then(res => {
+            this.$message.success(res.data.msg)
+            this.personalWorkPage = false
+            this.teamWorkPage = false
+            this.getAllAssign()
+          })
+          .catch(err => {
+            this.$message.error(err.msg)
+          })
+      } else { // 执行添加
+        assignmentApi.createAssignment(this.newHomework)
+          .then(res => {
+            this.$message.success(res.data.msg)
+            this.personalWorkPage = false
+            this.teamWorkPage = false
+            this.complete()
+            this.getAllAssign()
+          })
+          .catch(err => {
+            this.$message.error(err.msg)
+          })
+      }
+    },
 
+    /* 弹出删除作业提示 */
+    popRemoveAssignment (id) {
+      this.assignmentId = id
+      this.deleteHWDialogVisible = true
+    },
 
-    /*删除作业*/
+    /* 删除作业 */
+    removeAssignment () {
+      assignmentApi.removeAssignment(this.assignmentId)
+        .then(res => {
+          this.$message.success(res.data.msg)
+          this.deleteHWDialogVisible = false
+          this.getAllAssign()
+          this.complete()
+        })
+        .catch(err => {
+          this.$message.error(err.msg)
+        })
+    },
 
-
+    /* 获取课程的所有作业 */
+    getAllAssign () {
+      assignmentApi.getAllAssignment(this.courseId)
+        .then(res => {
+          this.assignments = res.data.data.items
+          console.log(this.assignments)
+        })
+        .catch(err => {
+          this.$message.error(err.msg)
+        })
+    },
+    ...mapGetters(['getUserInfo']),
+    complete () {
+      this.$root.$emit('next', this.courseId)
+    }
   },
-
-  mounted() {
-
+  created () {
+    this.courseId = this.$route.params.id
+    this.getAllAssign()
+    this.complete()
+    this.user = this.getUserInfo()
   }
 }
 </script>
@@ -363,5 +449,19 @@ export default {
   text-align: center;
   line-height: 40px;
   border-radius: 8px;
+}
+
+.assignment-title {
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.hli:hover .assignment-title {
+  color: #4d90fe;
+}
+
+.assignment-title:hover {
+  text-decoration-line: underline;
 }
 </style>

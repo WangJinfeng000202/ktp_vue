@@ -5,7 +5,6 @@ module.exports = {
     https: false, // 协议
     open: true, // 启动服务时自动打开浏览器访问
     proxy: { // 开发环境代理配置
-
       [process.env.VUE_APP_BASE_API]: { // 自动获取，注意要[],在.env.development里配置的
         // 目标服务器地址，在.env.development里配置的。代理访问http://localhost:9001
         target: process.env.VUE_APP_SERVICE_URL,

@@ -69,6 +69,7 @@ export default {
   height: 72px;
   z-index: 2;
   box-sizing: border-box;
+  box-shadow: 0 0 5px #ccc;
 }
 
 .nav-menu-left {
