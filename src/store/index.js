@@ -10,7 +10,6 @@ export default new Vuex.Store({
       username: '王金锋',
       avatar: 'https://online-edu-adela.oss-cn-chengdu.aliyuncs.com/2020/10/10/09edff03e1fc427abdbcda6607eeb18801.jpg'
     }
-
   },
   mutations: {},
   getters: {
