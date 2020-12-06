@@ -3,19 +3,20 @@
     <div class="main">
       <!-- 创建/加入课程;发布活动按钮-->
       <div style="float: right;">
-        <el-dropdown trigger="click">
-          <el-button type="primary" size="medium">+ 创建/加入课程</el-button>
+        <el-dropdown v-if="user.role==='教师'" trigger="click">
+          <el-button type="primary"  size="medium">+ 创建/加入课程</el-button>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item><span @click="popCreateCourseForm">创建课程</span></el-dropdown-item>
             <el-dropdown-item><span @click="popJoinCourse">加入课程</span></el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
+        <el-button type="primary" v-if="user.role==='学生'" size="medium" @click="popJoinCourse">加入课程</el-button>
         &nbsp;
-        <el-button type="primary" size="medium">+ 快速发布活动</el-button>
+        <el-button type="primary" v-if="user.role==='教师'" size="medium">+ 快速发布活动</el-button>
       </div>
       <!-- 课程排序/归档管理按钮-->
       <div class="sortAndGuiDang">
-        <span style="cursor: pointer" @click="popSortCourse"><i class="el-icon-sort"></i>课程排序</span>
+        <span style="cursor: pointer" v-if="user.role==='教师'" @click="popSortCourse"><i class="el-icon-sort"></i>课程排序</span>
         <span style="display:inline-block;width: 20px"></span>
         <span style="cursor: pointer" @click="popCourseFiled"><i class="el-icon-files"></i>归档管理</span>
       </div>
@@ -24,7 +25,7 @@
     <el-divider content-position="left">置顶课程</el-divider>
     <div class="course-top">
       <!--创建的置顶课程-->
-      <div class="course" v-for="(course) in courseCreatedAndIsTop">
+      <div class="course" v-for="(course) in courseCreatedAndIsTop" v-if="user.role==='教师'">
         <div class="teach">
           <div class="symbol">教</div>
           <div class="tri"></div>
@@ -96,7 +97,7 @@
         </div>
         <div :style="{backgroundImage:'url('+course.miniCover+')'}" class="fulImg">
           <div class="title-name">
-            <a class="course-title" href="#">{{ course.courseTitle }}</a><br/>
+            <router-link class="course-title" :to="'/Student/interact/'+course.courseId">{{ course.courseTitle }}</router-link><br/>
             <span class="class-name">{{ course.className }}</span><br/>
           </div>
           <div>
@@ -145,14 +146,18 @@
     <el-divider content-position="left">其他课程</el-divider>
     <div class="course-top">
       <!--创建的非置顶课程-->
-      <div class="course" v-for="(course) in courseCreatedAndIsNotTop">
+      <div class="course" v-if="user.role==='教师'"  v-for="(course) in courseCreatedAndIsNotTop">
         <div class="teach">
           <div class="symbol">教</div>
           <div class="tri"></div>
         </div>
         <div :style="{backgroundImage:'url('+course.miniCover+')'}" class="fulImg">
           <div class="title-name">
-            <router-link class="course-title" :to="'/Teacher/ClassInteract/'+course.id">{{ course.courseTitle }}</router-link><br/>
+            <router-link class="course-title" :to="'/Teacher/ClassInteract/'+course.id">{{
+                course.courseTitle
+              }}
+            </router-link>
+            <br/>
             <span class="class-name">{{ course.className }}</span><br/>
           </div>
           <div>
@@ -253,7 +258,7 @@
           </div>
         </div>
       </div>
-      <div class="course">
+      <div class="course" v-if="user.role==='教师'">
         <div class="create-filImg"></div>
         <div style="width: 100%;height: 149px;display: flex;align-items: center;justify-content: center"
              @click="popCreateCourseForm">
@@ -337,7 +342,7 @@
       <div class="sortAndGuiDangPgeHead">
         <i class="el-icon-close" style="position: absolute;right: 26px;top: 10px;cursor: pointer;z-index: 10"
            @click="sortCourse"></i>
-        <el-tabs v-model="sortAndGuiDangIndex" type="border-card" @tab-click="handleClick">
+        <el-tabs v-model="sortAndGuiDangIndex" type="border-card" @tab-click="handleClick" v-if="user.role==='教师'">
           <el-tab-pane label="课程排序" name="sort">
             <div style="list-style: none;height: 540px; overflow:auto;">
               <li class="sli" draggable="true"
@@ -349,7 +354,7 @@
           <el-tab-pane label="归档管理" name="file">
             <div class="fileCourseList">
               <!--创建的课程-->
-              <li class="fileCourse" v-for="(course) in courseCreatedAndIsFiled">
+              <li class="fileCourse" v-for="(course) in courseCreatedAndIsFiled" v-if="user.role==='教师'">
                 <div :style="{backgroundImage:'url('+course.cover+')'}" class="fileCourseImg">
                   <strong style="float: left">
                     <a style="font-size: 18px">{{ course.courseTitle }}</a>
@@ -396,7 +401,6 @@
         <el-button type="primary" @click="fileCourseSelf(fileCourseId)">归档自己</el-button>
       </span>
     </el-dialog>
-
   </div>
 </template>
 <script>
@@ -404,14 +408,16 @@
 import courseApi from '@/api/course/course'
 import userCourseApi from '@/api/course/userCourse'
 import noCourse from '@/components/noCourse'
-
+import {getUserInfo} from '@/utils/auth'
+import qs from 'qs'
 export default {
   name: 'courseList',
   components: { noCourse },
 
   data () {
     return {
-      userId: 'string',
+      userId: '',
+      user:{},
       // 加入课程对话框
       joinCourseDialogVisible: false,
       // 加入课程加课码
@@ -463,17 +469,20 @@ export default {
     }
   },
   created () {
+    this.user = JSON.parse(getUserInfo())
+    this.userId = this.user.id
+    console.log(this.user)
+    console.log(this.userId)
     this.getAllCourse(this.userId)
     this.generateSchoolYear()
   },
   methods: {
-
     //恢复课程
     recover (course) {
       if (course.teacherName) {
         userCourseApi.recoverCourse(course.id)
           .then(res => {
-            this.$message.success(res.data.msg)
+            this.$message.success(res.msg)
             this.showSortAndGuiDang = false
             this.getAllFiledCourse()
             this.getAllCourse(this.userId)
@@ -485,7 +494,7 @@ export default {
         courseApi.recoverCourse(course.id)
           .then(res => {
             this.showSortAndGuiDang = false
-            this.$message.success(res.data.msg)
+            this.$message.success(res.msg)
             this.getAllFiledCourse()
             this.getAllCourse(this.userId)
           })
@@ -517,8 +526,8 @@ export default {
       //获取所有归档的课程
       courseApi.getAllCourseFiled(this.userId).then(res => {
         console.log(res)
-        this.courseCreatedAndIsFiled = res.data.data.items1
-        this.courseJoinedAndIsFiled = res.data.data.items2
+        this.courseCreatedAndIsFiled = res.data.items1
+        this.courseJoinedAndIsFiled = res.data.items2
       }).catch(err => {
         this.$message.error(err.msg)
       })
@@ -538,7 +547,7 @@ export default {
       if (this.courseType === 't') {
         courseApi.fileSelf(id)
           .then(res => {
-            this.$message.success(res.data.msg)
+            this.$message.success(res.msg)
             this.fileDialogVisible = false
             this.getAllCourse(this.userId)
           }).catch(err => {
@@ -547,7 +556,7 @@ export default {
       } else {
         userCourseApi.fileSelf(id)
           .then(res => {
-            this.$message.success(res.data.msg)
+            this.$message.success(res.msg)
             this.fileDialogVisible = false
             this.getAllCourse(this.userId)
           }).catch(err => {
@@ -559,7 +568,7 @@ export default {
     fileCourseAll (id) {
       courseApi.fileAll(id)
         .then(res => {
-          this.$message.success(res.data.msg)
+          this.$message.success(res.msg)
           this.fileDialogVisible = false
           this.getAllCourse(this.userId)
         }).catch(err => {
@@ -571,7 +580,7 @@ export default {
     dropCourse () {
       userCourseApi.dropCourse(this.dropCourseId)
         .then(res => {
-          this.$message.success(res.data.msg)
+          this.$message.success(res.msg)
           this.dropCourseDialog = false
           this.getAllCourse(this.userId)
           this.getAllFiledCourse()
@@ -592,7 +601,7 @@ export default {
     removeCourse () {
       courseApi.removeCourseCreated(this.removeCourseId)
         .then(res => {
-          this.$message.success(res.data.msg)
+          this.$message.success(res.msg)
           this.removeCourseDialog = false
           this.getAllCourse(this.userId)
           this.getAllFiledCourse()
@@ -615,7 +624,7 @@ export default {
         userCourseApi.notTopCourse(course.id)
           .then(res => {
             this.getAllCourse(this.userId)
-            this.$message.success(res.data.msg)
+            this.$message.success(res.msg)
           })
           .catch(err => {
             this.$message.error(err.msg)
@@ -624,7 +633,7 @@ export default {
         userCourseApi.topCourse(course.id)
           .then(res => {
             this.getAllCourse(this.userId)
-            this.$message.success(res.data.msg)
+            this.$message.success(res.msg)
           })
           .catch(err => {
             this.$message.error(err.msg)
@@ -638,7 +647,7 @@ export default {
         courseApi.notTopCourse(course.id)
           .then(res => {
             this.getAllCourse(this.userId)
-            this.$message.success(res.data.msg)
+            this.$message.success(res.msg)
           })
           .catch(err => {
             this.$message.error(err.msg)
@@ -647,7 +656,7 @@ export default {
         courseApi.topCourse(course.id)
           .then(res => {
             this.getAllCourse(this.userId)
-            this.$message.success(res.data.msg)
+            this.$message.success(res.msg)
           })
           .catch(err => {
             this.$message.error(err.msg)
@@ -661,7 +670,7 @@ export default {
       if (this.createCourseForm.id) { // 如果存在id则执行修改
         courseApi.updateCourse(this.createCourseForm)
           .then(res => {
-            this.$message.success(res.data.msg)
+            this.$message.success(res.msg)
             this.dialogFormVisible = false
             this.getAllCourse(this.userId)
           })
@@ -671,7 +680,7 @@ export default {
       } else { // 不存在id则执行添加方法
         courseApi.createCourse(this.createCourseForm)
           .then(res => {
-            this.$message.success(res.data.msg)
+            this.$message.success(res.msg)
             this.dialogFormVisible = false
             this.getAllCourse(this.userId)
           })
@@ -695,7 +704,7 @@ export default {
       this.dialogFormVisible = true
       courseApi.getById(courseId)
         .then(res => {
-          this.createCourseForm = res.data.data.item
+          this.createCourseForm = res.data.item
         }).catch(err => {
         this.$message.error(err.msg)
       })
@@ -730,7 +739,7 @@ export default {
       console.log(joinCourseInfo)
       courseApi.joinCourse(joinCourseInfo)
         .then(res => {
-          this.$message.success(res.data.msg)
+          this.$message.success(res.msg)
         }).catch(err => {
         this.$message.error(err.data.msg)
       })
@@ -740,14 +749,15 @@ export default {
     getAllCourse (userId) {
       courseApi.getAllMyCourse(userId)
         .then(res => {
-          this.courseCreatedAndIsTop = res.data.data.items1
-          this.courseCreatedAndIsNotTop = res.data.data.items2
-          this.courseJoinedAndIsTop = res.data.data.items3
-          this.courseJoinedAndIsNotTop = res.data.data.items4
+          this.courseCreatedAndIsTop = res.data.items1
+          this.courseCreatedAndIsNotTop = res.data.items2
+          this.courseJoinedAndIsTop = res.data.items3
+          this.courseJoinedAndIsNotTop = res.data.items4
         }).catch(err => {
         this.$message.error('数据加载失败')
       })
     }
+
   }
 
 }

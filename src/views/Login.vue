@@ -8,63 +8,64 @@
             <a class="a1" :class="{ 'active':flag2}" @click="isShowPhone">手机短信登录</a>
             <a class="a2" @click="isShowWeChat">微信登录</a>
           </div>
+          <!--密码登录-->
           <div class="loginByAccount" v-if="account">
-            <el-form ref="rulesform" :model="rulesform" :rules="formrules">
-              <el-form-item style="margin-top:10px" prop="formaccount">
-                <el-input type="text" v-model="rulesform.formaccount"
+            <el-form ref="loginFrom" :model="loginFrom">
+              <el-form-item style="margin-top:10px">
+                <el-input type="text" v-model="loginFrom.account"
                           placeholder="邮箱/账号/手机号"></el-input>
               </el-form-item>
-              <el-form-item prop="formpassword">
-                <el-input type="password" v-model="rulesform.formpassword" placeholder="密码"></el-input>
+              <el-form-item prop="password">
+                <el-input type="password" v-model="loginFrom.password" placeholder="密码"></el-input>
               </el-form-item>
               <el-form-item style="margin-top: -27px; height: 50px;">
                 <el-checkbox type="checkbox" v-model="check" class="auto-login">下次自动登录</el-checkbox>
                 <a class="forget">忘记密码？</a>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary"> 登录 </el-button>
+                <el-button type="primary" @click="loginAccount" v-loading.fullscreen.lock="loading"> 登录</el-button>
               </el-form-item>
               <el-form-item>
                 <router-link to="/register" class="btn-register">
                   <span class="str1">还没有账号？</span><span class="str2">去注册</span>
-                  </router-link>
+                </router-link>
               </el-form-item>
             </el-form>
             <a @click="isShowWeChat" class="qr-sj"></a>
-
           </div>
+          <!--短信验证码登录-->
           <div class="loginByPhoneNumber" v-if="phone">
-            <el-form ref="form2" :model="form2" label-width="80px" :rules="formrules2">
+            <el-form ref="phoneForm" label-width="80px">
               <el-form-item>
-                <input class="phone-number" v-model="form2.phonenumber" placeholder="手机号"/>
+                <div class="phone-number">
+                  <input v-model="phoneForm.phone" placeholder="手机号"/>
+                </div>
               </el-form-item>
               <el-form-item>
-                <input class="code-input" v-model="form2.codenumber" placeholder="验证码"/>
-                <el-button class="code" type="primary">获取验证码</el-button>
+                <input class="code-input" v-model="phoneForm.code" placeholder="验证码"/>
+                <el-button class="code" type="primary" @click="sendCode">{{ verCode.buttonText }}</el-button>
               </el-form-item>
               <el-form-item style="margin-left: -18%; margin-top: -23px;  height: 65px;">
                 <el-checkbox type="checkbox" v-model="check" class="auto-login">下次自动登录</el-checkbox>
                 <a class="forget">忘记密码？</a>
               </el-form-item>
               <el-form-item>
-                <el-button class="btnlogin" type="primary">登录</el-button>
+                <el-button class="btnlogin" type="primary" @click="loginPhone" v-loading.fullscreen.lock="loading">登录
+                </el-button>
               </el-form-item>
               <router-link to="/register" class="btn-register">
                 <span class="str1">还没有账号？</span><span class="str2">去注册</span>
               </router-link>
               <a @click="isShowWeChat" class="qr-sj"></a>
             </el-form>
-
           </div>
         </div>
-
       </div>
       <div class="loginByWeChat" v-if="weChat">
         <div class="title">微信登录</div>
         <div class="yzm">
           <img class="ysm-img" src="../assets/loginAndRegister/login-code.jpg"/>
         </div>
-
         <div class="p">
           <p>请使用微信扫描二维码登录</p>
           <p>“课堂派”</p>
@@ -76,11 +77,15 @@
 </template>
 
 <script>
+import userApi from '@/api/user/user'
+import { setToken } from '@/utils/auth'
+import sendApi from '@/api/verCode/verCode'
 
 export default {
   name: 'login',
   data () {
     return {
+      loading: false,
       account: true,
       phone: false,
       weChat: false,
@@ -88,55 +93,23 @@ export default {
       flag1: true,
       flag2: false,
       check: false,
-      msgcode: '',
-      code: '',
-      form2: {
-        phonenumber: '',
-        codenumber: ''
+      loginFrom: {
+        account: '',
+        password: ''
       },
-      rulesform: {
-        formaccount: '',
-        formpassword: ''
+      phoneForm: {
+        phone: '',
+        code: ''
       },
-      formrules: {
-        // required  是否为必填项， trigger:表单验证的触发时机，失去焦点进行验证
-        formaccount: [
-          {
-            required: true,
-            message: '请输入邮箱/账户/手机号/',
-            trigger: 'blur'
-          }
-        ],
-        formpassword: [
-          {
-            required: true,
-            message: '请输入密码',
-            trigger: 'blur'
-          }
-        ]
-      },
-      formrules2: {
-        // required  是否为必填项， trigger:表单验证的触发时机，失去焦点进行验证
-        phonenumber: [
-          {
-            required: true,
-            message: '请输入手机号',
-            trigger: 'blur'
-          }
-        ],
-        codenumber: [
-          {
-            required: true,
-            message: '请输入验证码',
-            trigger: 'blur'
-          }
-        ]
+      verCode: {
+        disabled: false,
+        buttonText: '获取',
+        time: 60
       }
     }
   },
 
   methods: {
-
     isShowAccount () {
       this.account = true
       this.phone = false
@@ -158,10 +131,63 @@ export default {
     clickBack () {
       this.weChat = false
       this.backShow = true
+    },
+    loginAccount () {
+      this.loading = true
+      userApi.loginAccount(this.loginFrom)
+        .then(res => {
+          let token = res.data.token
+          //获取返回用户信息，放到cookie里面
+          setToken(token)
+          this.loading = false
+          this.$message.success(res.msg)
+          this.$router.push({ path: '/Main/index' })
+        })
+        .catch(err => {
+          this.loading = false
+          this.$message.error(err.msg)
+        })
+    },
+    loginPhone () {
+      this.loading = true
+      userApi.loginPhone(this.phoneForm)
+        .then(res => {
+          let token = res.data.token
+          //获取返回用户信息，放到cookie里面
+          setToken(token)
+          this.loading = false
+          this.$router.push({ path: '/Main/index' })
+          this.$message.success(res.msg)
+        })
+        .catch(err => {
+          this.loading = false
+          this.$message.error(err.msg)
+        })
+    },
+    sendCode () {
+      sendApi.sendCode(this.phoneForm.phone)
+        .then(res => {
+          this.$message.success(res.msg)
+        })
+        .catch(err => {
+          this.$message.error(err.msg)
+        })
+      this.verCode.time = 60
+      this.timer()
+    },
+    timer () {
+      if (this.verCode.time > 0) {
+        this.verCode.disabled = true
+        this.verCode.time--
+        this.verCode.buttonText = this.verCode.time + 's'
+        setTimeout(this.timer, 1000)
+      } else {
+        this.verCode.time = 0
+        this.verCode.buttonText = '获取'
+        this.verCode.disabled = false
+      }
     }
-
   }
-
 }
 </script>
 
@@ -191,9 +217,22 @@ a {
   margin-left: -14%;
   width: 95%;
   height: 50px;
-  padding: 0px 16px;
+  padding: 0 16px;
   border-radius: 4px;
   border: 1px solid #DCDFE6;
+  display: flex;
+  align-items: center;
+}
+
+.phone-number:hover {
+
+}
+
+.phone-number input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 16px;
 }
 
 .el-form-item__error {
@@ -207,6 +246,7 @@ a {
   padding: 0 18px;
   border-radius: 4px;
   border: 1px solid #DCDFE6;
+  outline: none;
 }
 
 .code {
@@ -452,18 +492,6 @@ span.el-checkbox__label {
   padding-left: 20px;
 }
 
-.inpu {
-  width: 66%;
-  height: 54px;
-  float: left;
-  font-size: 16px;
-  border: 1px solid rgba(226, 230, 237, 1);
-  border-radius: 4px;
-  padding-left: 21px;
-  margin-bottom: 20px;
-  margin-left: 7%;
-  padding-right: 69px;
-}
 
 .btn-register {
   text-align: right;
@@ -512,7 +540,7 @@ span.el-checkbox__label {
 .el-radio-button__orig-radio:checked + .el-radio-button__inner {
   background: white;
   color: black;
-  border: 0px;
+  border: 0;
   box-shadow: 0 0;
 }
 

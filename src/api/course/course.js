@@ -84,5 +84,18 @@ export default {
       url:`${prefix}/recoverCourse/${courseId}`,
       method:'get'
     })
+  },
+  getCourseById(courseId){
+    return request({
+      url:`${prefix}/getCourseById/${courseId}`,
+      methods:'get'
+    })
   }
+}
+
+export function getCourseById(courseId){
+  return request({
+    url:`${prefix}/getCourseById/${courseId}`,
+    methods:'get'
+  })
 }

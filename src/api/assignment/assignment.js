@@ -36,3 +36,15 @@ export default {
     })
   }
 }
+export function getCourseWorkById (id) {
+  return request({
+    url: `${prefix}/getInfo/${id}`,
+    method: 'get'
+  })
+}
+export function getViewById(id){
+  return request({
+    url:`${prefix}/getViewInfo/${id}`,
+    method:'get'
+  })
+}

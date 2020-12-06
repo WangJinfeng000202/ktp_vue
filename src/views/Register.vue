@@ -1,5 +1,5 @@
 <template>
-  <div class="registerback">
+  <div class="registerBack">
     <div class="back-ground">
       <div v-if="one">
         <h3 class="h3">注册账号</h3>
@@ -9,23 +9,21 @@
           <a @click="studentLogin" class="student">我是学生</a>
         </div>
         <router-link to="/login" class="btn-login">
-
           <span class="str1">已有账号？</span>
           <span class="str2">去登录</span>
         </router-link>
       </div>
-
       <div v-if="teacher" class="teacherDiv">
         <div class="title clearfix" @click="previouseOne">
           <a class="return"></a>
           <h3 class="fl">老师/助教注册</h3>
         </div>
         <div class="padding-cont">
-          <input type="text" class="inputbox" placeholder="邮箱/手机">
-          <input type="password" class="inputbox" placeholder="密码">
-          <input type="password" class="inputbox" placeholder="再次输入密码">
-          <input type="text" class="inputbox" placeholder="姓名">
-          <input type="text" class="inputbox" placeholder="学校">
+          <input type="text" v-model="userInfo.account" class="inputbox" placeholder="邮箱/手机">
+          <input type="password" v-model="userInfo.password" class="inputbox" placeholder="密码">
+          <input type="password" v-model="password" class="inputbox" placeholder="再次输入密码">
+          <input type="text" v-model="userInfo.username" class="inputbox" placeholder="姓名">
+          <input type="text" v-model="userInfo.school" class="inputbox" placeholder="学校">
           <div class="haveCode">
             <input type="text" class="inputbox1" placeholder="验证码">
             <div style="float: right;width: 35%;height: 42px;">
@@ -33,7 +31,7 @@
             </div>
           </div>
         </div>
-        <a href="javascript:;" class="btn-btn">注册为老师/助教</a>
+        <a href="javascript:;" @click="doRegister" class="btn-btn">注册为老师/助教</a>
         <router-link to="/login" class="btn-login">
           <span class="str1">已有账号？</span><span class="str2">去登录</span>
         </router-link>
@@ -46,19 +44,19 @@
           <h3 class="fl2">学生注册</h3>
         </div>
         <div class="padding-cont">
-          <input type="text" class="inputbox" placeholder="邮箱/手机">
-          <input type="password" class="inputbox" placeholder="密码">
-          <input type="password" class="inputbox" placeholder="再次输入密码">
-          <input type="text" class="inputbox" placeholder="姓名">
-          <input type="text" class="inputbox" placeholder="学号">
-          <input type="text" class="inputbox" placeholder="学校">
+          <input type="text" v-model="userInfo.account" class="inputbox" placeholder="邮箱/手机">
+          <input type="password" v-model="userInfo.password" class="inputbox" placeholder="密码">
+          <input type="password" v-model="password" class="inputbox" placeholder="再次输入密码">
+          <input type="text" v-model="userInfo.username" class="inputbox" placeholder="姓名">
+          <input type="text" v-model="userInfo.schoolId" class="inputbox" placeholder="学号">
+          <input type="text" v-model="userInfo.school" class="inputbox" placeholder="学校">
           <div class="haveCode2">
             <input type="text" class="inputbox1" placeholder="验证码">
-            <div style="    float: right;width: 35%;height: 42px;">
+            <div style="float: right;width: 35%;height: 42px;">
               <img alt="点击切换" src="../assets/registerIma/verify1.png" style="width: 100%;height: 100%">
             </div>
           </div>
-          <a href="javascript:;" class="btn-btn2">注册为学生</a>
+          <a href="javascript:;" @click="doRegister" class="btn-btn2">注册为学生</a>
           <router-link to="/login" class="btn-login">
             <span class="str1">已有账号？</span><span class="str2">去登录</span>
           </router-link>
@@ -69,6 +67,8 @@
 </template>
 
 <script>
+import { register } from '@/api/user/user'
+
 export default {
   name: 'register',
   data () {
@@ -76,7 +76,9 @@ export default {
       one: true,
       teacher: false,
       student: false,
-      mark: 0
+      mark: 0,
+      password: '',
+      userInfo: {}
     }
   },
   methods: {
@@ -93,6 +95,16 @@ export default {
       this.one = true
       this.student = false
       this.teacher = false
+    },
+    doRegister () {
+      this.userInfo.identityRole = this.teacher ? '教师' : '学生'
+      register(this.userInfo)
+        .then(res => {
+          this.$message.success(res.msg)
+        })
+        .catch(err => {
+          this.$message.error(err.msg)
+        })
     }
   }
 }
@@ -148,16 +160,18 @@ a {
 .padding-cont {
   width: 82%;
   height: 333px;
-  margin: 0 auto;
-  margin-top: -10px;
+  margin: -10px auto 0;
 
 }
 
 .inputbox {
   width: 91%;
-  height: 31px;
-  padding: 4px 13px;
+  height: 50px;
+  padding: 0 16px;
+  border-radius: 4px;
+  border: 1px solid #DCDFE6;
   margin-bottom: 9px;
+  outline: none;
 }
 
 .inputbox1 {
@@ -165,6 +179,7 @@ a {
   height: 31px;
   padding: 4px 13px;
   margin-bottom: 9px;
+  outline: none;
 }
 
 .fl {
@@ -210,8 +225,8 @@ a {
 
 .h3 {
   text-align: left;
-  padding: 0px 29px;
-  font-size: 27px;
+  padding: 0 29px;
+  font-size: 32px;
   font-weight: 400;
 }
 
@@ -220,7 +235,7 @@ a {
   color: rgb(112, 112, 112);
   text-align: left;
   font-size: 12px;
-  padding: 0px 30px;
+  padding: 0 30px;
 }
 
 .student {
@@ -277,13 +292,12 @@ a {
   margin-left: 15px;
 }
 
-.registerback {
+.registerBack {
   background: url("../assets/registerIma/register.jpg");
-  background-size: 100% 100%;
-  width: 1536px;
-  height: 721px;
+  background-size: cover;
+  width: 100%;
+  height: 100%;
   margin: 0 auto;
-  position: relative;
 }
 
 .back-ground {
@@ -306,7 +320,7 @@ a {
   margin-left: 0%;
   border-radius: 4px;
   margin-right: auto;
-  padding-top: 20px;
+  padding: 25px;
 }
 
 .studentDiv {

@@ -121,9 +121,12 @@
           <div>
             <div style="width: 100%;height: auto;padding-top: 10px">
               <div style="float: left;">
-                  <span
-                    class="assignment-title">{{ item.assignmentTitle }}</span><br><br>
-                <span>{{ item.briefIntroduction?item.briefIntroduction:'如题所述'}}</span>
+                <router-link :to="'/markScore/'+courseId+'/'+item.id" class="assignment-title">{{
+                    item.assignmentTitle
+                  }}
+                </router-link>
+                <br><br>
+                <span>{{ item.briefIntroduction ? item.briefIntroduction : '如题所述' }}</span>
               </div>
               <div class="courseDataBox">
                 <div class="courseDataBoxSon">
@@ -174,7 +177,7 @@
 
 <script>
 import assignmentApi from '@/api/assignment/assignment'
-import { mapGetters } from 'vuex'
+import { getUserInfo } from '@/utils/auth'
 
 export default {
   name: 'assignment',
@@ -246,7 +249,7 @@ export default {
         this.ShowPersonalWorkPage()
         assignmentApi.getById(assignment.id)
           .then(res => {
-            this.newHomework = res.data.data.item
+            this.newHomework = res.data.item
           })
           .catch(err => {
             this.$message.error(err.msg)
@@ -259,11 +262,11 @@ export default {
     /* 发布修改作业 */
     publishAssignment () {
       this.newHomework.courseId = this.courseId
-      this.newHomework.userId = this.user.userId
+      this.newHomework.userId = this.user.id
       if (this.newHomework.id) { // 如果有id，执行修改
         assignmentApi.modifyAssignment(this.newHomework)
           .then(res => {
-            this.$message.success(res.data.msg)
+            this.$message.success(res.msg)
             this.personalWorkPage = false
             this.teamWorkPage = false
             this.getAllAssign()
@@ -274,7 +277,7 @@ export default {
       } else { // 执行添加
         assignmentApi.createAssignment(this.newHomework)
           .then(res => {
-            this.$message.success(res.data.msg)
+            this.$message.success(res.msg)
             this.personalWorkPage = false
             this.teamWorkPage = false
             this.complete()
@@ -296,7 +299,7 @@ export default {
     removeAssignment () {
       assignmentApi.removeAssignment(this.assignmentId)
         .then(res => {
-          this.$message.success(res.data.msg)
+          this.$message.success(res.msg)
           this.deleteHWDialogVisible = false
           this.getAllAssign()
           this.complete()
@@ -310,14 +313,13 @@ export default {
     getAllAssign () {
       assignmentApi.getAllAssignment(this.courseId)
         .then(res => {
-          this.assignments = res.data.data.items
+          this.assignments = res.data.items
           console.log(this.assignments)
         })
         .catch(err => {
           this.$message.error(err.msg)
         })
     },
-    ...mapGetters(['getUserInfo']),
     complete () {
       this.$root.$emit('next', this.courseId)
     }
@@ -326,7 +328,7 @@ export default {
     this.courseId = this.$route.params.id
     this.getAllAssign()
     this.complete()
-    this.user = this.getUserInfo()
+    this.user = JSON.parse(getUserInfo())
   }
 }
 </script>
@@ -452,6 +454,8 @@ export default {
 }
 
 .assignment-title {
+  color: #2d2d2d;
+  text-decoration: none;
   cursor: pointer;
   font-size: 20px;
   font-weight: 400;

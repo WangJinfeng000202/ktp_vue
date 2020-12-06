@@ -31,63 +31,37 @@
     </div>
     <div class="course">
       <div :style="{backgroundImage:'url(' + course.cover + ')'}" class="top">
-        <a class="selectTheme">更改背景</a><br>
-        <div style="width: 100%;height: 131px;margin-top:30px">
+        <div style="width: 100%;height: 131px;margin-top:30px;display: flow-root;">
+          <!--课程名称-->
           <h1 style="font-weight: 500;color: #fff;font-size: 30px;">
             {{ course.courseTitle }}
-            <i class="el-icon-edit-outline" style="padding-left: 10px;font-size: 25px"></i>
           </h1>
+          <!--班级名-->
           <h2 style="font-weight: 500;color: #fff;font-size: 15px;padding-top: 5px">{{ course.className }}</h2>
+          <!--三个小标签-->
           <div class="seleBox">
             <div class="sele">
-              <div class="erweima"></div>
-              加课二维码
-            </div>
-            <div class="sele">
-              <el-dropdown trigger="click" class="infotextmain">
-                <span style="cursor: pointer;">加课码：{{ course.courseCode }}<i
-                  class="el-icon-arrow-down el-icon--right"></i></span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item>停用</el-dropdown-item>
-                  <el-dropdown-item>重置</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
+              <div class="infotextmain">
+                <span style="cursor: pointer;">加课码：{{ course.courseCode }}</span>
+              </div>
             </div>
             <div class="sele">
               <i class="el-icon-user" style="width: 24px;height: 24px;line-height:24px;background-size: 16px;"></i>
               <router-link :to="{path:'/members',query:{courseId: course.id}}" style="text-decoration: none;">
-                <div class="infotextmain">成员 {{ course.memberNum }} 人</div>
+                <div class="infotextmain">同学 {{ course.classmate }}</div>
               </router-link>
             </div>
             <div class="sele">
-              <i class="el-icon-s-data"
-                 style="color:white;width: 24px;height: 24px;line-height:24px;background-size: 16px;"></i>数据分析
-            </div>
-            <div class="sele">
               <div class="grade"></div>
-              成绩管理
-            </div>
-            <div class="courseDataBox">
-              <div class="courseDataBoxSon">
-                <span style="font-size: 40px;padding-left: 10px">0</span>
-                <span style="font-size: 12px;">互动个数</span>
-              </div>
-              <div class="courseDataBoxSon">
-                <span style="font-size: 40px;padding-left: 10px">{{ course.assignmentNum }}</span>
-                <span style="font-size: 12px;">发布作业</span>
-              </div>
-              <div class="courseDataBoxSon">
-                <span style="font-size: 40px;padding-left: 10px">0</span>
-                <span style="font-size: 12px;">发布测试</span>
-              </div>
+              成绩
             </div>
           </div>
         </div>
       </div>
       <div class="topNav">
         <el-menu :default-active="activeNavIndex" mode="horizontal" menu-trigger="click" router class="topNavDefault">
-          <el-menu-item index="课堂互动" :route="'/teacher/classInteract/'+courseId">课堂互动</el-menu-item>
-          <el-menu-item index="作业" :route="'/teacher/assignment/'+courseId">作业</el-menu-item>
+          <el-menu-item index="课堂互动" :route="'/student/interact/'+courseId">课堂互动</el-menu-item>
+          <el-menu-item index="作业" :route="'/student/courseWork/'+courseId">作业</el-menu-item>
           <el-menu-item index="话题" disabled>话题</el-menu-item>
           <el-menu-item index="资料" disabled>资料</el-menu-item>
           <el-menu-item index="测试(考试)" disabled>测试(考试)</el-menu-item>
@@ -102,34 +76,27 @@
 </template>
 
 <script>
+import { getUserInfo } from '@/utils/auth'
 import courseApi from '@/api/course/course'
-import {getUserInfo} from '@/utils/auth'
 
 export default {
-  name: 'Course',
+  name: 'course',
   data () {
     return {
-      activeNavIndex: '课堂互动',
       courseId: '',
       user: {},
       course: {},
-      homeworkNum: ''
+      activeNavIndex: '课堂互动'
     }
   },
   created () {
     this.user = JSON.parse(getUserInfo())
     this.courseId = this.$route.params.id
-    this.getCourseDetailInfo(this.courseId)
-  },
-  mounted () {
-    const _this = this
-    _this.$root.$on('next', function (courseId) {
-      _this.getCourseDetailInfo(courseId)
-    })
+    this.getCourseInfo()
   },
   methods: {
-    getCourseDetailInfo (courseId) {
-      courseApi.getDetailById(courseId)
+    getCourseInfo () {
+      courseApi.getCourseById(this.courseId)
         .then(res => {
           this.course = res.data.item
         })
@@ -145,7 +112,6 @@ export default {
 .bge {
   height: 100%;
   min-height: 600px;
-  position: relative;
   background: #fff;
   margin: 0;
   padding: 0;
@@ -176,19 +142,11 @@ export default {
   border-bottom: none;
 }
 
-.el-menu-item {
-  font-size: 16px;
-  padding: 0 10px;
-  margin-right: 20px;
-  height: 100%;
-}
-
 .course {
   width: 1220px;
   height: auto;
   padding: 85px 10% 100px;
   z-index: 2;
-  position: relative;
 }
 
 .top {
@@ -198,6 +156,7 @@ export default {
   border-radius: 8px 8px 0 0;
   box-sizing: border-box;
   padding-left: 40px;
+  display: flow-root;
 }
 
 .topNav {
@@ -218,24 +177,12 @@ export default {
   border-bottom: 4px solid #2C58AB;
 }
 
-.selectTheme {
-  color: #FFF;
-  background: url(../../assets/courseDetail/theme.png) 0 no-repeat;
-  right: 15px;
-  top: 15px;
-  float: right;
-  padding-left: 30px;
-  cursor: pointer;
-  position: relative;
-}
-
 .seleBox {
   width: 100%;
   height: auto;
   margin-top: 10px;
   display: flex;
   flex-direction: row;
-  position: relative;
 }
 
 .sele {
@@ -245,16 +192,9 @@ export default {
   align-items: center;
   padding: 0 5px;
   cursor: pointer;
-  background-color: #83abdf;
+  background-color: #96a8a4;
   border-radius: 2px;
   margin-right: 15px;
-}
-
-.erweima {
-  background: url(../../assets/courseDetail/qrcodehover.png) center no-repeat;
-  width: 24px;
-  height: 24px;
-  background-size: 16px;
 }
 
 .grade {
@@ -270,22 +210,11 @@ export default {
   font-size: 12px;
   line-height: 24px;
 }
-
-.courseDataBox {
-  position: absolute;
-  right: 65px;
-  bottom: 0;
-  height: auto;
-  width: auto;
-  margin-left: 250px;
-  display: flex;
-  flex-direction: row;
+.el-menu-item {
+  font-size: 16px;
+  padding: 0 10px;
+  margin-right: 20px;
+  height: 100%;
 }
 
-.courseDataBoxSon {
-  display: flex;
-  flex-direction: column;
-  margin-left: 50px;
-  color: white;
-}
 </style>

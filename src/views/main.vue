@@ -19,8 +19,8 @@
         <el-menu-item index="消息通知" style="margin: 0"><i class="el-icon-bell"></i></el-menu-item>
         <el-submenu index="用户设置">
           <template slot="title"><img
-            src="https://online-edu-adela.oss-cn-chengdu.aliyuncs.com/2020/10/10/09edff03e1fc427abdbcda6607eeb18801.jpg"
-            alt="" :title="userName" style="width: 30px; height: 30px;border-radius: 50%;"></template>
+            :src="user.avatar"
+            alt="" :title="user.username" style="width: 30px; height: 30px;border-radius: 50%;"></template>
           <el-menu-item index="开通VIP"><i class="el-icon-shopping-cart-2"></i>开通VIP</el-menu-item>
           <el-menu-item index="机构账号绑定"><i class="el-icon-s-promotion"></i>机构账号绑定</el-menu-item>
           <el-menu-item index="个人设置"><i class="el-icon-s-tools"></i>个人设置</el-menu-item>
@@ -37,14 +37,31 @@
 
 <script>
 
-export default {
+import user from '@/api/user/user'
+import { setUser } from '@/utils/auth'
 
+export default {
   components: {},
   name: 'home',
   data () {
     return {
+      user: {},
       activeNavIndex: '课堂',
-      userName: '王金锋'
+    }
+  },
+  created () {
+    this.getUserInfo()
+  },
+  methods: {
+    getUserInfo () {
+      user.showUserInfo()
+        .then(res => {
+          this.user = res.data.userInfo
+          setUser(JSON.stringify(this.user))
+        })
+        .catch(err => {
+          this.$message.error(err.msg)
+        })
     }
   }
 }
