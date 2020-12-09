@@ -19,13 +19,13 @@
         </el-submenu>
         <el-menu-item index="消息通知" style="margin: 0"><i class="el-icon-bell"></i></el-menu-item>
         <el-submenu index="用户设置">
-          <template slot="title"><img :src="user.avatar" alt="" title=""
+          <template slot="title"><img :src="user.avatar" alt="" :title="user.username"
                                       style="width: 30px; height: 30px;border-radius: 50%;"></template>
           <el-menu-item index="开通VIP"><i class="el-icon-shopping-cart-2"></i>开通VIP</el-menu-item>
           <el-menu-item index="机构账号绑定"><i class="el-icon-s-promotion"></i>机构账号绑定</el-menu-item>
           <el-menu-item index="个人设置"><i class="el-icon-s-tools"></i>个人设置</el-menu-item>
           <el-menu-item index="邀请记录"><i class="el-icon-notebook-2"></i>邀请记录</el-menu-item>
-          <el-menu-item index="退出账户"><i class="el-icon-switch-button"></i>退出账户</el-menu-item>
+          <el-menu-item index="退出账户"><span @click="logout"><i class="el-icon-switch-button"></i>退出账户</span></el-menu-item>
         </el-submenu>
       </el-menu>
     </div>
@@ -62,10 +62,10 @@
         <el-menu :default-active="activeNavIndex" mode="horizontal" menu-trigger="click" router class="topNavDefault">
           <el-menu-item index="课堂互动" :route="'/student/interact/'+courseId">课堂互动</el-menu-item>
           <el-menu-item index="作业" :route="'/student/courseWork/'+courseId">作业</el-menu-item>
-          <el-menu-item index="话题" disabled>话题</el-menu-item>
-          <el-menu-item index="资料" disabled>资料</el-menu-item>
-          <el-menu-item index="测试(考试)" disabled>测试(考试)</el-menu-item>
-          <el-menu-item index="公告" disabled>公告</el-menu-item>
+          <el-menu-item index="话题">话题</el-menu-item>
+          <el-menu-item index="资料">资料</el-menu-item>
+          <el-menu-item index="测试(考试)">测试(考试)</el-menu-item>
+          <el-menu-item index="公告">公告</el-menu-item>
         </el-menu>
       </div>
       <div style="width:100%;height:auto;margin-top:100px">
@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import { getUserInfo } from '@/utils/auth'
+import { getUserInfo, setToken, setUser } from '@/utils/auth'
 import courseApi from '@/api/course/course'
 
 export default {
@@ -103,6 +103,11 @@ export default {
         .catch(err => {
           this.$message.error(err.msg)
         })
+    },
+    logout () {
+      setUser('')
+      setToken('')
+      this.$router.push({ path: '/' })
     }
   }
 }

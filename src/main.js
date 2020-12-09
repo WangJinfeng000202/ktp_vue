@@ -5,7 +5,8 @@ import store from './store'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import NProgress from 'nprogress'// 引入nprogress
-import 'nprogress/nprogress.css' // 这个样式必须引入
+import 'nprogress/nprogress.css'
+import { getToken, getUserInfo } from '@/utils/auth' // 这个样式必须引入
 Vue.use(ElementUI)
 
 Vue.config.productionTip = false
@@ -27,11 +28,16 @@ NProgress.configure({
   minimum: 0.3 // 初始化时的最小百分比
 })
 router.beforeEach((to, from, next) => {
-  // 每次切换页面时，调用进度条
-  NProgress.start()
-
-  // 这个一定要加，没有next()页面不会跳转的。这部分还不清楚的去翻一下官网就明白了
-  next()
+  console.log(to)
+  //如果token 或用户基本信息存在 获去主页面或去登陆页面或注册页面
+  if (getToken()!=null || (to.name === "Home") || (to.name === "Login") || (to.name === "Register")) {
+    // 每次切换页面时，调用进度条
+    NProgress.start()
+    // 这个一定要加，没有next()页面不会跳转的。这部分还不清楚的去翻一下官网就明白了
+    next()
+  }else { //否则去首页
+    next({path:'/'})
+  }
 })
 router.afterEach(() => {
   // 在即将进入新的页面组件前，关闭掉进度条

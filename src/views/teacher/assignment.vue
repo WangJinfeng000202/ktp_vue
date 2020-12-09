@@ -121,7 +121,7 @@
           <div>
             <div style="width: 100%;height: auto;padding-top: 10px">
               <div style="float: left;">
-                <router-link :to="'/markScore/'+courseId+'/'+item.id" class="assignment-title">{{
+                <router-link :to="'/markTalk/'+courseId+'/markScore/'+item.id" class="assignment-title">{{
                     item.assignmentTitle
                   }}
                 </router-link>
@@ -314,7 +314,6 @@ export default {
       assignmentApi.getAllAssignment(this.courseId)
         .then(res => {
           this.assignments = res.data.items
-          console.log(this.assignments)
         })
         .catch(err => {
           this.$message.error(err.msg)

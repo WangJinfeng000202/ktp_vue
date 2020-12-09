@@ -3,10 +3,16 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
+// 解决ElementUI导航栏中的vue-router在3.0版本以上重复点菜单报错问题
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+}
+
 const routes = [
   {
     path: '/',
-    name: 'home',
+    name: 'Home',
     component: () => import('@/views/Home')
   },
   {
@@ -26,7 +32,7 @@ const routes = [
     children: [
       {
         path: 'index',
-        name: 'courses',
+        name: 'Index',
         component: () => import('@/views/courseList')
       }
     ]
@@ -49,52 +55,48 @@ const routes = [
     ]
   },
   {
+    path: '/members/:id',
+    name: 'Members',
+    component: () => import('@/views/Members')
+  }
+  ,
+  {
     path: '/Student',
-    name: 'student',
+    name: 'Student',
     component: () => import('@/views/student/course'),
     children: [
       {
       path: 'interact/:id',
-      name: 'ClassInteract',
+      name: 'Interact',
       component: () => import('@/views/student/interact')
       },
       {
         path: 'courseWork/:id',
-        name: 'Assignment',
+        name: 'CourseWork',
         component: () => import('@/views/student/courseWork')
       }
     ]
   },
   {
-    path: '/detail',
+    path: '/detail/:cid',
     name: 'Detail',
     component: () => import('@/views/student/courseWorkDetail'),
     children: [
       {
-        path: 'submit/:cid/:id',
+        path: 'submit/:id',
         name: 'Submit',
         component:() => import('@/views/student/submit')
-      }
-      ]
+      }]
   },
   {
-    path: '/markScore/:cid/:id',
-    name: 'MarkScore',
-    component: () => import('@/views/teacher/markScore')
-  },
-  {
-    path:'/sss',
-    name:'sss',
-    component:() => import('@/components/canvas')
-  },
-  {
-    path:'/1/login',
-    name:'sss',
-    component:() => import('@/components/login')
-  },{
-    path:'/1/register',
-    name:'sss',
-    component:() => import('@/components/register')
+    path: '/markTalk/:cid/',
+    name: 'MarkTalk',
+    component: () => import('@/views/teacher/markTalk'),
+    children: [{
+      path: 'markScore/:id',
+      name: 'MarkScore',
+      component: () => import('@/views/teacher/markScore'),
+    }]
   }
 ]
 

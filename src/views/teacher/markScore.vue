@@ -1,139 +1,156 @@
 <template>
-  <div class="main">
-    <!----头部工具栏-->
-    <div class="head-title">
-      <h2>{{ homework.assignmentTitle }}</h2>
-      <button class="gr-fs">生成期末成绩</button>
-      <div class="togsh">
-        <span class="end-date">截止{{ homework.deadline }}</span>
-        <span class="no-name"><input type="text" placeholder="学号、姓名"><i class="el-icon-search"></i></span>
-        <button class="hd-ap">对学生隐藏成绩<i class="el-icon-arrow-down"></i></button>
-        <span class="ck-rpt"><i class="el-icon-setting"></i>查重设置</span>
+  <div>
+    <div class="main">
+      <!----头部工具栏-->
+      <div class="head-title">
+        <h2>{{ homework.assignmentTitle }}</h2>
+        <button class="gr-fs">生成期末成绩</button>
+        <div class="togsh">
+          <span class="end-date">截止{{ homework.deadline }}</span>
+          <span class="no-name"><input v-model="queryParam.schoolId" type="text" placeholder="学号、姓名"><i class="el-icon-search"></i></span>
+          <button class="hd-ap">对学生隐藏成绩<i class="el-icon-arrow-down"></i></button>
+          <span class="ck-rpt"><i class="el-icon-setting"></i>查重设置</span>
+        </div>
       </div>
-    </div>
-    <!----筛选-->
-    <div class="review-wrap">
-      <div class="work-tips-infor">
+      <!----筛选-->
+      <div class="review-wrap">
+        <div class="work-tips-infor">
         <span
           class="infor-left">已筛选出1人 （全班共{{
             homework.reviewNum + homework.notReviewNum + homework.notSubmitNum
           }}人）</span>
-        <span class="hb"></span><a class="infor-right" @click="tour=!tour">{{ tour ? '收起' : '展开' }}</a>
-      </div>
-      <div class="tb-ckbox" v-if="tour">
-        <!--作业状态-->
-        <div class="tb-item">
-          <div class="item-left">成绩：</div>
-          <span class="ult">不限</span>
-          <span class="cks">
-                    <el-checkbox>已批（{{ homework.reviewNum }}）</el-checkbox>
-                </span>
-          <span class="cks">
-                    <el-checkbox>未批（{{ homework.notReviewNum }}）</el-checkbox>
-                </span>
-          <span class="cks">
-                    <el-checkbox>未交（{{ homework.notSubmitNum }}）</el-checkbox>
-                </span>
+          <span class="hb"></span><a class="infor-right" @click="tour=!tour">{{ tour ? '收起' : '展开' }}</a>
         </div>
-        <!--相似度-->
-        <div class="tb-item">
-          <div class="item-left">相似度：</div>
-          <span class="ult">不限</span>
-          <span class="cks">
+        <div class="tb-ckbox" v-if="tour">
+          <!--作业状态-->
+          <div class="tb-item">
+            <div class="item-left">成绩：</div>
+            <span class="ult">不限</span>
+            <span class="cks">
+                    <el-checkbox v-model="queryParam.isReviewed">已批（{{ homework.reviewNum }}）</el-checkbox>
+                </span>
+            <span class="cks">
+                    <el-checkbox v-model="queryParam.isNotReviewed">未批（{{ homework.notReviewNum }}）</el-checkbox>
+                </span>
+            <span class="cks">
+                    <el-checkbox v-model="queryParam.isNotSubmit">未交（{{ homework.notSubmitNum }}）</el-checkbox>
+                </span>
+          </div>
+          <!--相似度-->
+          <div class="tb-item">
+            <div class="item-left">相似度：</div>
+            <span class="ult">不限</span>
+            <span class="cks">
                     <el-checkbox>0-50%</el-checkbox>
                 </span>
-          <span class="cks">
+            <span class="cks">
                     <el-checkbox>50%-70%</el-checkbox>
                 </span>
-          <span class="cks">
+            <span class="cks">
                     <el-checkbox>70%-90%</el-checkbox>
                 </span>
-          <span class="cks">
+            <span class="cks">
                     <el-checkbox>90%-100%</el-checkbox>
                 </span>
-        </div>
-        <!--提交状态-->
-        <div class="tb-item">
-          <div class="item-left">提交状态：</div>
-          <span class="ult">不限</span>
-          <span class="cks">
+          </div>
+          <!--提交状态-->
+          <div class="tb-item">
+            <div class="item-left">提交状态：</div>
+            <span class="ult">不限</span>
+            <span class="cks">
                     <el-checkbox>按时交</el-checkbox>
                 </span>
-          <span class="cks">
+            <span class="cks">
                     <el-checkbox>超时交</el-checkbox>
                 </span>
 
-        </div>
-        <!--分享状态-->
-        <div class="tb-item">
-          <div class="item-left">分享状态：</div>
-          <span class="ult">不限</span>
-          <span class="cks">
+          </div>
+          <!--分享状态-->
+          <div class="tb-item">
+            <div class="item-left">分享状态：</div>
+            <span class="ult">不限</span>
+            <span class="cks">
                     <el-checkbox>未分享</el-checkbox>
                 </span>
-          <span class="cks">
+            <span class="cks">
                     <el-checkbox>已分享</el-checkbox>
                 </span>
-        </div>
-        <!--作业字数和批改次数-->
-        <div class="tb-item last-two">
-          <div class="item-left">作业字数：</div>
-          <input type="text"><span> - </span><input type="text">&nbsp;&nbsp;&nbsp;&nbsp;<a href="">确定</a>
-        </div>
-        <div class="tb-item last-two">
-          <div class="item-left">批改次数</div>
-          <input type="text"><span> - </span><input type="text">&nbsp;&nbsp;&nbsp;&nbsp;<a href="">确定</a>
-        </div>
-      </div>
-    </div>
-    <div class="tour">
-      <div class="tour-bar">
-        <a href="#" style="width:150px">学号</a>
-        <a href="#">姓名</a>
-        <a href="#">成绩</a>
-        <a href="#">相似度</a>
-        <a href="#">提交状态</a>
-        <a href="#">作业字数</a>
-        <a href="#">批改次数</a>
-      </div>
-      <div class="tb-hw">
-        <span><el-checkbox>已选0/20</el-checkbox></span>
-        <el-button size="mini" type="primary">批量给分</el-button>
-        <el-button size="mini" type="primary">打回作业</el-button>
-        <el-button size="mini" type="primary">下载</el-button>
-      </div>
-      <div class="tb-td" v-for="(item,index) in courseWorks" :key="index">
-        <span style="width:150px"><el-checkbox></el-checkbox> {{ item.schoolId }}</span>
-        <span style="font-weight: 800">{{ item.username }}</span>
-        <span><input @blur="markScores(item)" v-model="item.score" type="text"
-                     class="score-input">/{{ homework.fullMark }}</span>
-        <span>--</span>
-        <span>{{ item.gmtCreate }}</span>
-        <span>--</span>
-        <span>--</span>
-        <span class="py" style="color: #32BAF0" @click="checkHomework(item.id)">进入批阅</span>
-      </div>
-    </div>
-    <!--学生上传文件列表-->
-    <el-dialog title="学生文件列表" :visible.sync="stuFileList" width="30%" center :close-on-click-modal="false"
-               :append-to-body="true">
-      <!--作业列表-->
-      <div class="file" v-for="file in fileList">
-        <div><img src="../../assets/fileType/file_ext_big_others.png" width="55" height="55" alt=""></div>
-        <div class="file-detail">
-          <div class="filename">{{ file.name }}</div>
-          <div class="size-re">
-            <div>
-              {{ file.size }}
-            </div>
-            <div class="remove-a"><a :href="file.url">下载</a></div>
+          </div>
+          <!--作业字数和批改次数-->
+          <div class="tb-item last-two">
+            <div class="item-left">作业字数：</div>
+            <input type="text"><span> - </span><input type="text">&nbsp;&nbsp;&nbsp;&nbsp;<a href="">确定</a>
+          </div>
+          <div class="tb-item last-two">
+            <div class="item-left">批改次数</div>
+            <input type="text"><span> - </span><input type="text">&nbsp;&nbsp;&nbsp;&nbsp;<a href="">确定</a>
           </div>
         </div>
       </div>
-      <span slot="footer" class="dialog-footer">
+      <div class="tour">
+        <div class="tour-bar">
+          <a href="#" style="width:150px">学号</a>
+          <a href="#">姓名</a>
+          <a href="#">成绩</a>
+          <a href="#">相似度</a>
+          <a href="#">提交状态</a>
+          <a href="#">作业字数</a>
+          <a href="#">批改次数</a>
+        </div>
+        <div class="tb-hw">
+          <span><el-checkbox>已选0/20</el-checkbox></span>
+          <el-button size="mini" type="primary">批量给分</el-button>
+          <el-button size="mini" type="primary">打回作业</el-button>
+          <el-button size="mini" type="primary">下载</el-button>
+        </div>
+        <div class="tb-td" v-for="(item,index) in courseWorks" :key="index">
+          <span style="width:150px"><el-checkbox></el-checkbox> {{ item.schoolId }}</span>
+          <span style="font-weight: 800">{{ item.username }}</span>
+          <span>
+            <template v-if="item.id">
+              <input @blur="markScores(item)" v-model="item.score" type="text"
+                     class="score-input">/{{ homework.fullMark }}
+            </template>
+            <template v-else>
+              <span style="color: red;font-size: 18px">未交</span>
+            </template>
+            </span>
+          <span>--</span>
+          <span style="width: 138px;">{{ item.gmtCreate }}</span>
+          <span>--</span>
+          <span>--</span>
+          <span style="width: auto;">
+            <template v-if="item.id">
+              <span class="py" style="color: #32BAF0" @click="checkHomework(item.id)">进入批阅</span>
+            </template>
+            <template v-else>
+              <span class="cj" style="color: #32BAF0">催交<span class="qcj" style="padding-left:30px;color: #32BAF0">全部催交</span></span>
+            </template>
+          </span>
+
+        </div>
+      </div>
+      <!--学生上传文件列表-->
+      <el-dialog title="学生文件列表" :visible.sync="stuFileList" width="30%" center :close-on-click-modal="false"
+                 :append-to-body="true">
+        <!--作业列表-->
+        <div class="file" v-for="file in fileList">
+          <div><img src="../../assets/fileType/file_ext_big_others.png" width="55" height="55" alt=""></div>
+          <div class="file-detail">
+            <div class="filename">{{ file.name }}</div>
+            <div class="size-re">
+              <div>
+                {{ file.size }}
+              </div>
+              <div class="remove-a"><a :href="file.url">下载</a></div>
+            </div>
+          </div>
+        </div>
+        <span slot="footer" class="dialog-footer">
         <el-button @click="closeFileList" style="margin-top: 20px;" type="primary">关 闭</el-button>
       </span>
-    </el-dialog>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -158,6 +175,12 @@ export default {
       fileList: [],
       stuFileList: false,
       studentId: '',
+      queryParam: {
+        isReviewed:false,
+        isNotReviewed:false,
+        isNotSubmit:false,
+        schoolId:''
+      }
     }
   },
   created () {
@@ -199,7 +222,7 @@ export default {
         })
     },
     getCourseWorks () {
-      getCourseWorks(this.courseId, this.homeworkId)
+      getCourseWorks(this.courseId, this.homeworkId,this.queryParam)
         .then(res => {
           this.courseWorks = res.data.items
         })
@@ -250,11 +273,10 @@ export default {
   text-align: center;
   background-color: #fff;
   color: #818181;
-  font-family: '微软雅黑';
+  font-family: '微软雅黑',serif;
   cursor: pointer;
   border-radius: 3px;
   padding: 0 10px;
-  float: right;
   border: 1px solid #ccc;
   outline: none;
 }
@@ -444,12 +466,12 @@ export default {
   border-top: none;
 }
 
-.tb-td span {
+.tb-td> span {
   font-size: 14px;
   line-height: 58px;
   display: block;
   height: 100%;
-  width: 100px;
+  width: 80px;
   text-align: center;
   color: #5a5a5a;
 }
@@ -507,12 +529,20 @@ export default {
   text-decoration: underline #32BAF0;
 }
 
-.py {
+.py,.cj,.qcj {
   color: #32BAF0;
   cursor: pointer;
 }
-
-.py:hover {
+.qcj {
+  display: none;
+}
+.cj:hover,.py:hover {
   text-decoration: underline #32BAF0;
 }
+.cj:hover .qcj{
+  display: inline;
+}
+
+
+
 </style>

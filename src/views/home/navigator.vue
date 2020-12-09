@@ -26,23 +26,34 @@
       </el-submenu>
       <el-menu-item index="8">试用新版</el-menu-item>
       <el-menu-item class="lg-btn">
-        <el-button plain style="color: #fff;background-color: transparent" @click="login()">登录</el-button>
-        <el-button type="primary" style="color: #fff" @click="register()">注册
-        </el-button>
+        <template v-if="!token">
+          <el-button plain style="color: #fff;background-color: transparent" @click="login()">登录</el-button>
+          <el-button type="primary" style="color: #fff" @click="register()">注册</el-button>
+        </template>
+        <template v-else>
+          <router-link class="course-title" to="/Main">进入课堂</router-link>
+        </template>
       </el-menu-item>
     </el-menu>
   </div>
 </template>
 
 <script>
+import { getToken } from '@/utils/auth'
+
 export default {
-  name: 'navigation',
+  name: 'navigator',
   data () {
     return {
+      token: '',
       activeIndex: '1',
       activeIndex2: '1'
     }
   },
+  created () {
+    this.token = getToken()
+  }
+  ,
   methods: {
     handleSelect (key, keyPath) {
       console.log(key, keyPath)
@@ -59,14 +70,36 @@ export default {
 </script>
 
 <style scoped>
-ul{
+ul {
   margin: 0;
 }
+
 .el-menu.el-menu--horizontal {
   border-bottom: none;
 }
-.lg-btn{
+
+.lg-btn {
   position: absolute;
   right: 40px;
+}
+.course-title {
+  color: #FFF;
+  line-height: 32px;
+  vertical-align: middle;
+  margin-left: 14px;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  height: 32px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-family: PingFangSC-Medium;
+  font-weight: 500;
+  padding: 0 10px;
+  min-width: 80px;
+  text-align: center;
+  background-color: #2c58ab;
+  text-decoration: none;
 }
 </style>

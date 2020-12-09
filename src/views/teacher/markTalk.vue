@@ -3,10 +3,10 @@
     <div class="nav-default">
       <div class="nav-menu-left">
         <div><img src="../../assets/registerBack.png" width="20" alt=""></div>
-        <router-link :to="'/student/courseWork/'+ courseId" class="course-title">算法分析与设计</router-link>
+        <router-link :to="'/Teacher/classInteract/'+ courseId" class="course-title">{{ course.courseTitle }}</router-link>
       </div>
       <div class="nav">
-        <router-link to="/detail/submit">提交作业</router-link>
+        <router-link to="/detail/submit">学生作业</router-link>
         <router-link to="">作业讨论</router-link>
       </div>
       <el-menu mode="horizontal" menu-trigger="click" class="nav-menu-right">
@@ -26,39 +26,39 @@
           <el-menu-item index="机构账号绑定"><i class="el-icon-s-promotion"></i>机构账号绑定</el-menu-item>
           <el-menu-item index="个人设置"><i class="el-icon-s-tools"></i>个人设置</el-menu-item>
           <el-menu-item index="邀请记录"><i class="el-icon-notebook-2"></i>邀请记录</el-menu-item>
-          <el-menu-item index="退出账户"><span @click="logout"><i class="el-icon-switch-button"></i>退出账户</span>
-          </el-menu-item>
+          <el-menu-item index="退出账户"><span @click="logout"><i class="el-icon-switch-button"></i>退出账户</span></el-menu-item>
         </el-submenu>
       </el-menu>
     </div>
-    <div style="padding-top: 40px;">
-      <router-view/>
-    </div>
+    <div style="padding-top: 40px;"><router-view/></div>
   </div>
 </template>
 
 <script>
 
-import { getUserInfo, removeToken, removeUser } from '@/utils/auth'
+import { getUserInfo, setToken, setUser } from '@/utils/auth'
 import { getCourseById } from '@/api/course/course'
 
 export default {
-  name: 'submitWork',
+  name: 'markTalk',
   data () {
     return {
-      courseId: '',
-      course: {},
-      user: {}
+      courseId:'',
+      assignmentId:'',
+      course:{},
+      user:{}
     }
   },
+  components: {},
   created () {
     this.user = JSON.parse(getUserInfo())
     this.courseId = this.$route.params.cid
+    this.getCourseInfo()
   },
   methods: {
     //获取课程信息
     getCourseInfo () {
-      getCourseById()
+      getCourseById(this.courseId)
         .then(res => {
           this.course = res.data.item
         })
@@ -66,10 +66,10 @@ export default {
           this.$message.error(err.msg)
         })
     },
-    logout () {
-      removeToken()
-      removeUser()
-      this.$router.push({ path: '/' })
+    logout (){
+      setUser("")
+      setToken("")
+      this.$router.push({path:'/'})
     }
 
   }
@@ -96,8 +96,7 @@ export default {
   align-items: center;
   border-bottom: none;
 }
-
-.nav-menu-left .course-title {
+.nav-menu-left .course-title{
   color: #FFF;
   line-height: 32px;
   vertical-align: middle;
@@ -135,7 +134,7 @@ export default {
   text-decoration: none;
 }
 
-.nav a:first-child {
+.nav a:first-child{
   border-bottom: 4px solid #2C58AB;
   border-left: 2px solid transparent;
   border-right: 2px solid transparent;

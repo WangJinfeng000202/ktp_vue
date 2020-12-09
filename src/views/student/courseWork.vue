@@ -3,8 +3,8 @@
     <!-- 作业显示列表-->
     <div class="homework">
       <div v-for="(item,index) in courseWorks" class="hli" :key="index">
-        <router-link :to="'/detail/submit/'+courseId+'/'+item.id" v-if="item.userAssignmentId==null" class="sc-btn">上传作业</router-link>
-        <router-link :to="'/detail/submit/'+courseId+'/'+item.id" v-else class="sc-btn-f">已提交</router-link>
+        <router-link :to="'/detail/'+courseId+'/submit/'+item.id" v-if="item.userAssignmentId==null" class="sc-btn">上传作业</router-link>
+        <router-link :to="'/detail/'+courseId+'/submit/'+item.id" v-else class="sc-btn-f">已提交</router-link>
         <div style="display: flex;flex-direction: column;">
           <div class="Htype">
             <span class="HtypeSpan">
@@ -33,22 +33,25 @@
 
 <script>
 import userAssignmentApi from '@/api/assignment/userAssignment'
+import { getUserInfo } from '@/utils/auth'
 
 export default {
   name: 'courseWork',
   data () {
     return {
       courseId: '',
+      user:{},
       courseWorks: [],
     }
   },
   created () {
     this.courseId = this.$route.params.id
+    this.user = JSON.parse(getUserInfo())
     this.getCourseWokList()
   },
   methods: {
     getCourseWokList () {
-      userAssignmentApi.getAllCourseWork(this.courseId)
+      userAssignmentApi.getAllCourseWork(this.courseId,this.user.id)
         .then(res => {
           this.courseWorks = res.data.items
         })

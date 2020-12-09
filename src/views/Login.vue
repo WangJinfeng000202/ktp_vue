@@ -43,7 +43,7 @@
               </el-form-item>
               <el-form-item>
                 <input class="code-input" v-model="phoneForm.code" placeholder="验证码"/>
-                <el-button class="code" type="primary" @click="sendCode">{{ verCode.buttonText }}</el-button>
+                <el-button class="code" type="primary" @click="send">{{ verCode.buttonText }}</el-button>
               </el-form-item>
               <el-form-item style="margin-left: -18%; margin-top: -23px;  height: 65px;">
                 <el-checkbox type="checkbox" v-model="check" class="auto-login">下次自动登录</el-checkbox>
@@ -79,7 +79,7 @@
 <script>
 import userApi from '@/api/user/user'
 import { setToken } from '@/utils/auth'
-import sendApi from '@/api/verCode/verCode'
+import  { sendCode } from '@/api/verCode/verCode'
 
 export default {
   name: 'login',
@@ -141,7 +141,7 @@ export default {
           setToken(token)
           this.loading = false
           this.$message.success(res.msg)
-          this.$router.push({ path: '/Main/index' })
+          this.$router.push({ path: '/Main' })
         })
         .catch(err => {
           this.loading = false
@@ -156,7 +156,7 @@ export default {
           //获取返回用户信息，放到cookie里面
           setToken(token)
           this.loading = false
-          this.$router.push({ path: '/Main/index' })
+          this.$router.push({ path: '/Main' })
           this.$message.success(res.msg)
         })
         .catch(err => {
@@ -164,8 +164,8 @@ export default {
           this.$message.error(err.msg)
         })
     },
-    sendCode () {
-      sendApi.sendCode(this.phoneForm.phone)
+    send () {
+      sendCode(this.phoneForm.phone)
         .then(res => {
           this.$message.success(res.msg)
         })

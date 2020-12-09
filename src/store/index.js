@@ -8,14 +8,10 @@ export default new Vuex.Store({
     user: {}
   },
   mutations: {
-    setUser(state,user) {
-      state.user = user
-    }
+
   },
   getters: {
-    getUserInfo (state) {
-      return state.user
-    }
+
   },
 
   actions: {

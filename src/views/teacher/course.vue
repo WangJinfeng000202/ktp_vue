@@ -25,7 +25,7 @@
           <el-menu-item index="机构账号绑定"><i class="el-icon-s-promotion"></i>机构账号绑定</el-menu-item>
           <el-menu-item index="个人设置"><i class="el-icon-s-tools"></i>个人设置</el-menu-item>
           <el-menu-item index="邀请记录"><i class="el-icon-notebook-2"></i>邀请记录</el-menu-item>
-          <el-menu-item index="退出账户"><i class="el-icon-switch-button"></i>退出账户</el-menu-item>
+          <el-menu-item index="退出账户"><span @click="logout"><i class="el-icon-switch-button"></i>退出账户</span></el-menu-item>
         </el-submenu>
       </el-menu>
     </div>
@@ -55,7 +55,7 @@
             </div>
             <div class="sele">
               <i class="el-icon-user" style="width: 24px;height: 24px;line-height:24px;background-size: 16px;"></i>
-              <router-link :to="{path:'/members',query:{courseId: course.id}}" style="text-decoration: none;">
+              <router-link :to="'/members/' + courseId" style="text-decoration: none;">
                 <div class="infotextmain">成员 {{ course.memberNum }} 人</div>
               </router-link>
             </div>
@@ -88,10 +88,10 @@
         <el-menu :default-active="activeNavIndex" mode="horizontal" menu-trigger="click" router class="topNavDefault">
           <el-menu-item index="课堂互动" :route="'/teacher/classInteract/'+courseId">课堂互动</el-menu-item>
           <el-menu-item index="作业" :route="'/teacher/assignment/'+courseId">作业</el-menu-item>
-          <el-menu-item index="话题" disabled>话题</el-menu-item>
-          <el-menu-item index="资料" disabled>资料</el-menu-item>
-          <el-menu-item index="测试(考试)" disabled>测试(考试)</el-menu-item>
-          <el-menu-item index="公告" disabled>公告</el-menu-item>
+          <el-menu-item index="话题" >话题</el-menu-item>
+          <el-menu-item index="资料" >资料</el-menu-item>
+          <el-menu-item index="测试(考试)" >测试(考试)</el-menu-item>
+          <el-menu-item index="公告" >公告</el-menu-item>
         </el-menu>
       </div>
       <div style="width:100%;height:auto;margin-top:100px">
@@ -103,7 +103,7 @@
 
 <script>
 import courseApi from '@/api/course/course'
-import {getUserInfo} from '@/utils/auth'
+import { getUserInfo, removeToken, removeUser, setToken, setUser } from '@/utils/auth'
 
 export default {
   name: 'Course',
@@ -128,6 +128,11 @@ export default {
     })
   },
   methods: {
+    logout (){
+      removeToken()
+      removeUser()
+      this.$router.push({path:'/'})
+    },
     getCourseDetailInfo (courseId) {
       courseApi.getDetailById(courseId)
         .then(res => {

@@ -1,13 +1,14 @@
 <template>
   <div class="bge">
     <div class="nav-default">
+      <img class="logo" @click="toMain" src="../assets/logo-mainblue.png" alt="">
       <el-menu :default-active="activeNavIndex" class="nav-menu-left" mode="horizontal" menu-trigger="click" router>
         <el-menu-item index="课堂" route="/TeacherMain">课堂</el-menu-item>
-        <el-menu-item index="备课区" disabled>备课区</el-menu-item>
-        <el-menu-item index="精品慕课" disabled>精品慕课</el-menu-item>
-        <el-menu-item index="我的精品" disabled>我的精品</el-menu-item>
-        <el-menu-item index="双选会" disabled>双选会</el-menu-item>
-        <el-menu-item index="论文管理" disabled>论文管理</el-menu-item>
+        <el-menu-item index="备课区">备课区</el-menu-item>
+        <el-menu-item index="精品慕课">精品慕课</el-menu-item>
+        <el-menu-item index="我的精品">我的精品</el-menu-item>
+        <el-menu-item index="双选会">双选会</el-menu-item>
+        <el-menu-item index="论文管理">论文管理</el-menu-item>
       </el-menu>
       <el-menu mode="horizontal" menu-trigger="click" class="nav-menu-right">
         <el-submenu index="工具">
@@ -18,14 +19,15 @@
         </el-submenu>
         <el-menu-item index="消息通知" style="margin: 0"><i class="el-icon-bell"></i></el-menu-item>
         <el-submenu index="用户设置">
-          <template slot="title"><img
-            :src="user.avatar"
-            alt="" :title="user.username" style="width: 30px; height: 30px;border-radius: 50%;"></template>
+          <template slot="title">
+            <img :src="user.avatar" alt="" :title="user.username" style="width: 30px; height: 30px;border-radius: 50%;">
+          </template>
           <el-menu-item index="开通VIP"><i class="el-icon-shopping-cart-2"></i>开通VIP</el-menu-item>
           <el-menu-item index="机构账号绑定"><i class="el-icon-s-promotion"></i>机构账号绑定</el-menu-item>
           <el-menu-item index="个人设置"><i class="el-icon-s-tools"></i>个人设置</el-menu-item>
           <el-menu-item index="邀请记录"><i class="el-icon-notebook-2"></i>邀请记录</el-menu-item>
-          <el-menu-item index="退出账户"><i class="el-icon-switch-button"></i>退出账户</el-menu-item>
+          <el-menu-item index="退出账户"><span @click="logout"><i class="el-icon-switch-button"></i>退出账户</span>
+          </el-menu-item>
         </el-submenu>
       </el-menu>
     </div>
@@ -38,7 +40,7 @@
 <script>
 
 import user from '@/api/user/user'
-import { setUser } from '@/utils/auth'
+import { removeToken, removeUser, setToken, setUser } from '@/utils/auth'
 
 export default {
   components: {},
@@ -58,10 +60,19 @@ export default {
         .then(res => {
           this.user = res.data.userInfo
           setUser(JSON.stringify(this.user))
+          this.$router.push({path:'/Main/index'})
         })
         .catch(err => {
           this.$message.error(err.msg)
         })
+    },
+    logout () {
+      removeToken()
+      removeUser()
+      this.$router.push({ path: '/' })
+    },
+    toMain () {
+      this.$router.push({ path: '/Main/index' })
     }
   }
 }
@@ -113,5 +124,13 @@ export default {
 
 .nav-menu-left .el-menu-item {
   border-bottom: 4px solid #2C58AB;
+}
+
+.logo {
+  cursor: pointer;
+  height: 20px;
+  float: left;
+  margin-top: 30px;
+  margin-left: 70px;
 }
 </style>

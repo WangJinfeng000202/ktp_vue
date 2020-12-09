@@ -32,3 +32,10 @@ export default {
     })
   }
 }
+
+export function getAllMembers(courseId){
+  return request({
+    url:`${prefix}/getAllMembers/${courseId}`,
+    method:'get'
+  })
+}

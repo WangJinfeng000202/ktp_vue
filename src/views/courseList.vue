@@ -4,7 +4,7 @@
       <!-- 创建/加入课程;发布活动按钮-->
       <div style="float: right;">
         <el-dropdown v-if="user.role==='教师'" trigger="click">
-          <el-button type="primary"  size="medium">+ 创建/加入课程</el-button>
+          <el-button type="primary" size="medium">+ 创建/加入课程</el-button>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item><span @click="popCreateCourseForm">创建课程</span></el-dropdown-item>
             <el-dropdown-item><span @click="popJoinCourse">加入课程</span></el-dropdown-item>
@@ -16,7 +16,8 @@
       </div>
       <!-- 课程排序/归档管理按钮-->
       <div class="sortAndGuiDang">
-        <span style="cursor: pointer" v-if="user.role==='教师'" @click="popSortCourse"><i class="el-icon-sort"></i>课程排序</span>
+        <span style="cursor: pointer" v-if="user.role==='教师'" @click="popSortCourse"><i
+          class="el-icon-sort"></i>课程排序</span>
         <span style="display:inline-block;width: 20px"></span>
         <span style="cursor: pointer" @click="popCourseFiled"><i class="el-icon-files"></i>归档管理</span>
       </div>
@@ -59,7 +60,7 @@
         <div class="recent-ass">
           <li class="ass-tip">近期作业</li>
           <li v-for="(item) in course.assignmentVos">
-            <a class="ass-title">{{ item.assignmentTitle }}</a>
+            <router-link :to="'/markTalk/'+course.id+'/markScore/'+item.id" class="ass-title" >{{ item.assignmentTitle }}</router-link>
           </li>
           <template>
             <li v-if="course.assignmentVos.length===0">无</li>
@@ -71,7 +72,7 @@
             <img class=" avatar el-avatar--small el-avatar--circle"
                  src="https://ktp123.oss-cn-beijing.aliyuncs.com/cover/35.png" alt="">
           </span>
-            <span style="font-size: 12px;margin-left: 10px">成员{{ course.userVos.length }}人</span>
+            <span style="font-size: 12px;margin-left: 10px">成员{{ course.memberCount }}人</span>
           </div>
           <div>
             <span @click="topOrNotCourse(course)" class="is-top">{{ course.isTop === 0 ? '取消置顶' : '置顶' }}</span>
@@ -97,7 +98,10 @@
         </div>
         <div :style="{backgroundImage:'url('+course.miniCover+')'}" class="fulImg">
           <div class="title-name">
-            <router-link class="course-title" :to="'/Student/interact/'+course.courseId">{{ course.courseTitle }}</router-link><br/>
+            <router-link class="course-title" :to="'/Student/interact/'+course.courseId">
+              {{ course.courseTitle }}
+            </router-link>
+            <br/>
             <span class="class-name">{{ course.className }}</span><br/>
           </div>
           <div>
@@ -146,16 +150,15 @@
     <el-divider content-position="left">其他课程</el-divider>
     <div class="course-top">
       <!--创建的非置顶课程-->
-      <div class="course" v-if="user.role==='教师'"  v-for="(course) in courseCreatedAndIsNotTop">
+      <div class="course" v-if="user.role==='教师'" v-for="(course) in courseCreatedAndIsNotTop">
         <div class="teach">
           <div class="symbol">教</div>
           <div class="tri"></div>
         </div>
         <div :style="{backgroundImage:'url('+course.miniCover+')'}" class="fulImg">
           <div class="title-name">
-            <router-link class="course-title" :to="'/Teacher/ClassInteract/'+course.id">{{
-                course.courseTitle
-              }}
+            <router-link class="course-title" :to="'/Teacher/ClassInteract/'+course.id">
+              {{ course.courseTitle }}
             </router-link>
             <br/>
             <span class="class-name">{{ course.className }}</span><br/>
@@ -181,7 +184,7 @@
         <div class="recent-ass">
           <li class="ass-tip">近期作业</li>
           <li v-for="(item) in course.assignmentVos">
-            <a class="ass-title">{{ item.assignmentTitle }}</a>
+            <router-link :to="'/markTalk/'+course.id+'/markScore/'+item.id" class="ass-title">{{ item.assignmentTitle }}</router-link>
           </li>
           <template>
             <li v-if="course.assignmentVos.length===0">无</li>
@@ -342,8 +345,8 @@
       <div class="sortAndGuiDangPgeHead">
         <i class="el-icon-close" style="position: absolute;right: 26px;top: 10px;cursor: pointer;z-index: 10"
            @click="sortCourse"></i>
-        <el-tabs v-model="sortAndGuiDangIndex" type="border-card" @tab-click="handleClick" v-if="user.role==='教师'">
-          <el-tab-pane label="课程排序" name="sort">
+        <el-tabs v-model="sortAndGuiDangIndex" type="border-card" @tab-click="handleClick">
+          <el-tab-pane label="课程排序" name="sort" v-if="user.role==='教师'">
             <div style="list-style: none;height: 540px; overflow:auto;">
               <li class="sli" draggable="true"
                   @dragstart="" @dragenter="" @dragend="">
@@ -408,8 +411,9 @@
 import courseApi from '@/api/course/course'
 import userCourseApi from '@/api/course/userCourse'
 import noCourse from '@/components/noCourse'
-import {getUserInfo} from '@/utils/auth'
+import { getUserInfo } from '@/utils/auth'
 import qs from 'qs'
+
 export default {
   name: 'courseList',
   components: { noCourse },
@@ -417,7 +421,7 @@ export default {
   data () {
     return {
       userId: '',
-      user:{},
+      user: {},
       // 加入课程对话框
       joinCourseDialogVisible: false,
       // 加入课程加课码
@@ -471,8 +475,6 @@ export default {
   created () {
     this.user = JSON.parse(getUserInfo())
     this.userId = this.user.id
-    console.log(this.user)
-    console.log(this.userId)
     this.getAllCourse(this.userId)
     this.generateSchoolYear()
   },
@@ -944,6 +946,8 @@ export default {
 }
 
 .ass-title {
+  cursor: pointer;
+  color: #2d2d2d;
   font-size: 14px;
   text-decoration: none;
 }

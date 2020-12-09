@@ -2,7 +2,7 @@
   <div class="home">
     <!--导航栏-->
     <div>
-      <navigation/>
+      <navigator/>
     </div>
     <!--轮播图-->
     <div style="margin: auto">
@@ -10,7 +10,7 @@
     </div>
     <!--视频播放-->
     <div style="background-color: #ececec">
-      <videos/>
+      <section-video/>
       <!--卡片介绍-->
       <home-class-intro/>
     </div>
@@ -42,25 +42,25 @@
 </template>
 
 <script>
-import navigation from '@/views/home/navigation'
+import navigator from '@/views/home/navigator'
 import rotation from '@/views/home/rotation'
-import videos from '@/views/home/video'
+import sectionVideo from '@/views/home/sectionVideo'
 import homeClassIntro from '@/views/home/homeClassIntro'
 import homeClassBack from '@/views/home/homeClassBack'
 import homeClassBack2 from '@/views/home/homeClassBack2'
 import homeClassBack3 from '@/views/home/homeClassBack3'
 import rotationPlotUnder from '@/views/home/rotationPlotUnder'
 import university from '@/views/home/universitys'
-import about from '@/views/home/footer'
+import about from '@/views/home/bottom'
 
 export default {
   name: 'Home',
   components: {
     about,
     university,
-    navigation,
+    navigator,
     rotation,
-    videos,
+    sectionVideo,
     homeClassIntro,
     homeClassBack,
     homeClassBack2,

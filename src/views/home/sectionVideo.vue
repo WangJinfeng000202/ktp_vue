@@ -15,7 +15,7 @@
 </template>
 <script>
 export default {
-  name: 'video'
+  name: 'sectionVideo'
 }
 </script>
 

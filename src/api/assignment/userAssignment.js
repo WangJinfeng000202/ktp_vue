@@ -3,9 +3,9 @@ import request from '@/utils/request'
 const prefix = '/front-edu/userAssignment'
 
 export default {
-  getAllCourseWork (id) {
+  getAllCourseWork (courseId,userId) {
     return request({
-      url: `${prefix}/getAllCourseWork/${id}`,
+      url: `${prefix}/getAllCourseWork/${courseId}/${userId}`,
       method: 'get'
     })
   },
@@ -35,10 +35,11 @@ export function getCourseWork (userId, assignmentId) {
   })
 }
 
-export function getCourseWorks (courseId, assignmentId) {
+export function getCourseWorks (courseId, assignmentId,queryParams) {
   return request({
     url: `${prefix}/getCourseWorks/${courseId}/${assignmentId}`,
-    method: 'get'
+    method: 'post',
+    data: queryParams
   })
 }
 
