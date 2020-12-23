@@ -119,7 +119,7 @@
         <div class="recent-ass">
           <li class="ass-tip">近期作业</li>
           <li v-for="(item) in course.assignmentVos">
-            <a class="ass-title">{{ item.assignmentTitle }}</a>
+            <router-link class="ass-title" :to="'/detail/' + course.courseId + '/submit/'+item.id">{{ item.assignmentTitle }}</router-link>
           </li>
           <template>
             <li v-if="course.assignmentVos.length===0">无</li>
@@ -238,7 +238,7 @@
         <div class="recent-ass">
           <li class="ass-tip">近期作业</li>
           <li v-for="(item) in course.assignmentVos">
-            <a class="ass-title">{{ item.assignmentTitle }}</a>
+            <router-link class="ass-title" :to="'/detail/' + course.courseId + '/submit/'+item.id">{{ item.assignmentTitle }}</router-link>
           </li>
           <template>
             <li v-if="course.assignmentVos.length===0">无</li>
@@ -469,7 +469,7 @@ export default {
       //创建的归档课程
       courseCreatedAndIsFiled: [],
       //加入的归档课程
-      courseJoinedAndIsFiled: [],
+      courseJoinedAndIsFiled: []
     }
   },
   created () {
@@ -742,6 +742,7 @@ export default {
       courseApi.joinCourse(joinCourseInfo)
         .then(res => {
           this.$message.success(res.msg)
+          this.getAllCourse(this.userId)
         }).catch(err => {
         this.$message.error(err.data.msg)
       })

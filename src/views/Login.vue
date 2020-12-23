@@ -10,8 +10,8 @@
           </div>
           <!--密码登录-->
           <div class="loginByAccount" v-if="account">
-            <el-form ref="loginFrom" :model="loginFrom">
-              <el-form-item style="margin-top:10px">
+            <el-form :ref="loginFrom" :model="loginFrom" :rules="rules" >
+              <el-form-item style="margin-top:10px" prop="account">
                 <el-input type="text" v-model="loginFrom.account"
                           placeholder="邮箱/账号/手机号"></el-input>
               </el-form-item>
@@ -105,7 +105,17 @@ export default {
         disabled: false,
         buttonText: '获取',
         time: 60
-      }
+      },
+      rules:{
+        account :[
+          { required: true, message: '请输入账号/邮箱/电话号码', trigger: 'blur' },
+          { validator:null,trigger:'blur' }
+        ],
+        password :[
+          { required: true, message: '密码不能为空', trigger: 'blur' },
+          { validator:null,trigger:'blur'}
+        ]
+      },
     }
   },
 
@@ -133,20 +143,24 @@ export default {
       this.backShow = true
     },
     loginAccount () {
-      this.loading = true
-      userApi.loginAccount(this.loginFrom)
-        .then(res => {
-          let token = res.data.token
-          //获取返回用户信息，放到cookie里面
-          setToken(token)
-          this.loading = false
-          this.$message.success(res.msg)
-          this.$router.push({ path: '/Main' })
-        })
-        .catch(err => {
-          this.loading = false
-          this.$message.error(err.msg)
-        })
+      this.$refs[this.loginFrom].validate((valid) => {
+        if (valid){
+          this.loading = true
+          userApi.loginAccount(this.loginFrom)
+            .then(res => {
+              let token = res.data.token
+              //获取返回用户信息，放到cookie里面
+              setToken(token)
+              this.loading = false
+              this.$message.success(res.msg)
+              this.$router.push({ path: '/Main' })
+            })
+            .catch(err => {
+              this.loading = false
+              this.$message.error(err.msg)
+            })
+        }
+      })
     },
     loginPhone () {
       this.loading = true

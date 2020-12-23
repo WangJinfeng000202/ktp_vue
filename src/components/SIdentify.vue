@@ -1,7 +1,6 @@
   <template>
     <div class="s-canvas">
-      <canvas id="s-canvas" :width="contentWidth" :height="contentHeight" style="position: relative;bottom: 40px;
-      left: 240px;"></canvas>
+      <canvas id="s-canvas" :width="contentWidth" :height="contentHeight"></canvas>
     </div>
   </template>
   <script>

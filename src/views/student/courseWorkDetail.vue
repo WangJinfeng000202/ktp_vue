@@ -3,7 +3,7 @@
     <div class="nav-default">
       <div class="nav-menu-left">
         <div><img src="../../assets/registerBack.png" width="20" alt=""></div>
-        <router-link :to="'/student/courseWork/'+ courseId" class="course-title">算法分析与设计</router-link>
+        <router-link :to="'/student/interact/'+ courseId" class="course-title">{{ course.courseTitle }}</router-link>
       </div>
       <div class="nav">
         <router-link to="/detail/submit">提交作业</router-link>
@@ -40,7 +40,7 @@
 <script>
 
 import { getUserInfo, removeToken, removeUser } from '@/utils/auth'
-import { getCourseById } from '@/api/course/course'
+import courseApi, { getCourseById } from '@/api/course/course'
 
 export default {
   name: 'submitWork',
@@ -54,12 +54,12 @@ export default {
   created () {
     this.user = JSON.parse(getUserInfo())
     this.courseId = this.$route.params.cid
+    this.getCourseInfo()
   },
   methods: {
     //获取课程信息
     getCourseInfo () {
-      getCourseById()
-        .then(res => {
+      getCourseById(this.courseId).then(res => {
           this.course = res.data.item
         })
         .catch(err => {

@@ -1,87 +1,145 @@
 <template>
   <div class="registerBack">
-    <div class="back-ground">
-      <div v-if="one">
-        <h3 class="h3">注册账号</h3>
-        <p class="p">请选择您在日常教学中的实际身份</p>
-        <div class="choose">
-          <a @click="teacherLogin" class="teacher">我是老师/助教</a>
-          <a @click="studentLogin" class="student">我是学生</a>
+    <div v-if="one" class="menu-main">
+      <h3 class="menu-reg">注册账号</h3>
+      <p class="identity">请选择您在日常教学中的实际身份</p>
+      <div class="choose">
+        <div @click="teacherLogin" class="btn-reg">
+          <img src="../assets/registerIma/teacher.png" alt="">
+          <a>我是老师/助教</a>
         </div>
-        <router-link to="/login" class="btn-login">
-          <span class="str1">已有账号？</span>
-          <span class="str2">去登录</span>
-        </router-link>
+        <div @click="studentLogin" class="btn-reg">
+          <img src="../assets/registerIma/student.png" alt="">
+          <a>我是学生</a>
+        </div>
       </div>
-      <div v-if="teacher" class="teacherDiv">
-        <div class="title clearfix" @click="previouseOne">
-          <a class="return"></a>
-          <h3 class="fl">老师/助教注册</h3>
-        </div>
-        <div class="padding-cont">
-          <input type="text" v-model="userInfo.account" class="inputbox" placeholder="邮箱/手机">
-          <input type="password" v-model="userInfo.password" class="inputbox" placeholder="密码">
-          <input type="password" v-model="password" class="inputbox" placeholder="再次输入密码">
-          <input type="text" v-model="userInfo.username" class="inputbox" placeholder="姓名">
-          <input type="text" v-model="userInfo.school" class="inputbox" placeholder="学校">
-          <div class="haveCode">
-            <input type="text" class="inputbox1" placeholder="验证码">
-            <div style="float: right;width: 35%;height: 42px;">
-              <img alt="点击切换" src="../assets/registerIma/verify1.png" style="width: 100%;height: 100%"/>
-            </div>
+      <router-link to="/login" class="btn-login">
+        <span class="str1">已有账号？</span>
+        <span class="str2">去登录</span>
+      </router-link>
+    </div>
+    <div v-if="teacher" class="teacherDiv">
+      <div class="register-name" @click="previouseOne">
+        <img src="../assets/registerIma/returnReg.png" alt="">
+        <span>老师/助教注册</span>
+      </div>
+      <el-form :model="userInfo" :rules="rules" :ref="userInfo">
+        <el-form-item prop="account">
+          <el-input type="text" v-model="userInfo.account" placeholder="邮箱/手机"/>
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input type="password" v-model="userInfo.password" placeholder="密码"/>
+        </el-form-item>
+        <el-form-item prop="password2">
+          <el-input type="password" v-model="userInfo.password2" placeholder="再次输入密码"/>
+        </el-form-item>
+        <el-form-item prop="username">
+          <el-input type="text" v-model="userInfo.username" placeholder="姓名"/>
+        </el-form-item>
+        <el-form-item prop="school">
+          <el-input type="text" v-model="userInfo.school" placeholder="学校"/>
+        </el-form-item>
+        <el-form-item prop="code">
+          <el-input type="text" v-model="userInfo.code" class="captcha" placeholder="验证码"/>
+          <div style="float: right;width: 35%;height: 42px;" @click="refreshCode">
+            <s-identify  :identifyCode="identifyCode"/>
           </div>
-        </div>
-        <a href="javascript:;" @click="doRegister" class="btn-btn">注册为老师/助教</a>
-        <router-link to="/login" class="btn-login">
-          <span class="str1">已有账号？</span><span class="str2">去登录</span>
-        </router-link>
+        </el-form-item>
+      </el-form>
+      <a @click="doRegister" class="btn-btn">注册为老师/助教</a>
+      <router-link to="/login" class="btn-login">
+        <span class="str1">已有账号？</span><span class="str2">去登录</span>
+      </router-link>
+    </div>
+    <div v-if="student" class="studentDiv">
+      <div class="register-name" @click="previouseOne">
+        <img src="../assets/registerIma/returnReg.png" alt="">
+        <span>学生注册</span>
       </div>
-
-      <div v-if="student" class="studentDiv">
-
-        <div class="title clearfix" @click="previouseOne">
-          <a class="return"></a>
-          <h3 class="fl2">学生注册</h3>
-        </div>
-        <div class="padding-cont">
-          <input type="text" v-model="userInfo.account" class="inputbox" placeholder="邮箱/手机">
-          <input type="password" v-model="userInfo.password" class="inputbox" placeholder="密码">
-          <input type="password" v-model="password" class="inputbox" placeholder="再次输入密码">
-          <input type="text" v-model="userInfo.username" class="inputbox" placeholder="姓名">
-          <input type="text" v-model="userInfo.schoolId" class="inputbox" placeholder="学号">
-          <input type="text" v-model="userInfo.school" class="inputbox" placeholder="学校">
-          <div class="haveCode2">
-            <input type="text" class="inputbox1" placeholder="验证码">
-            <div style="float: right;width: 35%;height: 42px;">
-              <img alt="点击切换" src="../assets/registerIma/verify1.png" style="width: 100%;height: 100%">
-            </div>
+      <el-form :model="userInfo" :rules="rules" :ref="userInfo">
+        <el-form-item prop="account">
+          <el-input type="text" v-model="userInfo.account" placeholder="邮箱/手机"/>
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input type="password" v-model="userInfo.password" placeholder="密码"/>
+        </el-form-item>
+        <el-form-item prop="password2">
+          <el-input type="password" v-model="userInfo.password2" placeholder="再次输入密码"/>
+        </el-form-item>
+        <el-form-item prop="username">
+          <el-input type="text" v-model="userInfo.username" placeholder="姓名"/>
+        </el-form-item>
+        <el-form-item prop="schoolId">
+          <el-input type="text" v-model="userInfo.schoolId" placeholder="学号"/>
+        </el-form-item>
+        <el-form-item prop="school">
+          <el-input type="text" v-model="userInfo.school" placeholder="学校"/>
+        </el-form-item>
+        <el-form-item prop="code">
+          <el-input type="text" v-model="userInfo.code" class="captcha" placeholder="验证码"/>
+          <div style="float: right;width: 35%;height: 42px;" @click="refreshCode">
+              <s-identify :identifyCode="identifyCode"/>
           </div>
-          <a href="javascript:;" @click="doRegister" class="btn-btn2">注册为学生</a>
-          <router-link to="/login" class="btn-login">
-            <span class="str1">已有账号？</span><span class="str2">去登录</span>
-          </router-link>
-        </div>
-      </div>
+        </el-form-item>
+      </el-form>
+      <a type="primary" @click="doRegister" class="btn-btn">注册为学生</a>
+      <router-link to="/login" class="btn-login">
+        <span class="str1">已有账号？</span><span class="str2">去登录</span>
+      </router-link>
     </div>
   </div>
 </template>
 
 <script>
 import { register } from '@/api/user/user'
-
+import SIdentify from '@/components/SIdentify'
 export default {
   name: 'register',
+  components:{
+    SIdentify
+  },
   data () {
     return {
       one: true,
       teacher: false,
       student: false,
       mark: 0,
+      code:'',
+      identifyCode:'',
+      identifyCodes:[0,1,2,3,4,5,6,7,8,9],
       password: '',
-      userInfo: {}
+      userInfo: {},
+      rules:{
+        account: [{required: true,message:'请输入邮箱/手机',trigger: 'blur'},{validator:null,trigger:'blur'}],
+        password:[{required: true,message:'请输入密码',trigger: 'blur'},{validator:null,trigger:'blur'}],
+        password2:[{required: true,message:'请再次输入密码',trigger: 'blur'},{validator:null,trigger:'blur'}],
+        username:[{required: true,message:'请输入姓名',trigger:'blur'},{validator:null,trigger:'blur'}],
+        schoolId: [{required: true,message:'请输入学号',trigger: 'blur'},{validator:null,trigger:'blur'}],
+        school:[{required: true,message:'请输入学校',trigger: 'blur'},{validator:null,trigger:'blur'}],
+        code:[{required: true,message:'请输入验证码',trigger: 'blur'},{validator:null,trigger:'blur'}]
+      }
     }
   },
+  created () {
+    this.refreshCode()
+  },
   methods: {
+    // 生成随机数
+    randomNum(min, max) {
+      return Math.floor(Math.random() * (max - min) + min)
+    },
+    // 切换验证码
+    refreshCode() {
+      this.identifyCode = ''
+      this.makeCode(this.identifyCodes, 4)
+    },
+    // 生成四位随机验证码
+    makeCode(o, l) {
+      for (let i = 0; i < l; i++) {
+        this.identifyCode += this.identifyCodes[this.randomNum(0, this.identifyCodes.length)]
+      }
+      console.log(this.identifyCode);
+    },
     teacherLogin () {
       this.one = false
       this.teacher = true
@@ -97,14 +155,27 @@ export default {
       this.teacher = false
     },
     doRegister () {
-      this.userInfo.identityRole = this.teacher ? '教师' : '学生'
-      register(this.userInfo)
-        .then(res => {
-          this.$message.success(res.msg)
-        })
-        .catch(err => {
-          this.$message.error(err.msg)
-        })
+      this.$refs[this.userInfo].validate((valid) => {
+        if (valid) {
+          if (this.userInfo.password !== this.userInfo.password2){
+            this.$message.error("密码输入不一致")
+          }
+          else if (this.userInfo.code!==this.identifyCode){
+            this.$message.error("验证码错误")
+          }else{
+            this.userInfo.identityRole = this.teacher ? '教师' : '学生'
+            register(this.userInfo)
+              .then(res => {
+                this.userInfo = {}
+                this.$message.success(res.msg)
+              })
+              .catch(err => {
+                this.$message.error(err.msg)
+              })
+          }
+
+        }
+      })
     }
   }
 }
@@ -112,108 +183,20 @@ export default {
 
 <style scoped>
 
-a {
+.captcha {
+  width: 60%;
+}
+
+.btn-btn{
+  display: block;
+  text-decoration: none;
+  height: 48px;
+  background-color: #32BAF0;
+  text-align: center;
+  color: #FFFFFF;
+  line-height: 48px;
+  border-radius: 3px;
   cursor: pointer;
-}
-
-.btn-btn {
-  text-align: center;
-  border-radius: 3px;
-  color: #fff;
-  display: block;
-  margin-top: -7px;
-  height: 48px;
-  background: #32BAF0;
-  line-height: 48px;
-  font-size: 16px;
-  text-decoration: none;
-  width: 83%;
-  margin-left: 33px;
-
-}
-
-.btn-btn2 {
-  width: 100%;
-  margin-left: 0px;
-  text-align: center;
-  border-radius: 3px;
-  color: #fff;
-  display: block;
-  margin-top: -7px;
-  height: 48px;
-  background: #32BAF0;
-  line-height: 48px;
-  font-size: 16px;
-  text-decoration: none;
-}
-
-.haveCode {
-  width: 100%;
-  height: 31px;
-}
-
-.haveCode2 {
-  width: 100%;
-  height: 77px;
-}
-
-.padding-cont {
-  width: 82%;
-  height: 333px;
-  margin: -10px auto 0;
-
-}
-
-.inputbox {
-  width: 91%;
-  height: 50px;
-  padding: 0 16px;
-  border-radius: 4px;
-  border: 1px solid #DCDFE6;
-  margin-bottom: 9px;
-  outline: none;
-}
-
-.inputbox1 {
-  width: 52%;
-  height: 31px;
-  padding: 4px 13px;
-  margin-bottom: 9px;
-  outline: none;
-}
-
-.fl {
-  margin-top: -30px;
-  margin-left: 45px;
-  line-height: 9px;
-  font-size: 29px;
-  color: #3B3D45;
-  font-weight: 500;
-}
-
-.fl2 {
-  margin-top: -30px;
-  margin-left: 50px;
-  line-height: 9px;
-  font-size: 29px;
-  color: #3B3D45;
-  font-weight: 500;
-}
-
-.return {
-  background: url("../assets/registerIma/returnReg.png");
-  width: 40px;
-  height: 40px;
-  display: inline-block;
-  margin-right: 90%
-}
-
-.str2 {
-  color: #32BAF0;
-}
-
-.str1 {
-  color: #AFB1B3;
 }
 
 .btn-login {
@@ -223,116 +206,81 @@ a {
   text-decoration: none;
 }
 
-.h3 {
-  text-align: left;
-  padding: 0 29px;
-  font-size: 32px;
-  font-weight: 400;
-}
-
-.p {
-  margin-top: -7px;
-  color: rgb(112, 112, 112);
-  text-align: left;
-  font-size: 12px;
-  padding: 0 30px;
-}
-
-.student {
-  display: block;
-  width: 68%;
-  font-size: 16px;
-  color: #fff;
-  line-height: 57px;
-  text-align: center;
-  background: #32BAF0;
-  margin-left: 90px;
-  border-radius: 3px;
-  margin-top: -10px;
-}
-
-.student::before {
-  background: url("../assets/registerIma/student.png");
-  content: '';
-  position: absolute;
-  left: 29px;
-  top: 258px;
-  width: 58px;
-  height: 60px;
-}
-
-.teacher {
-  display: block;
-  width: 68%;
-  font-size: 16px;
-  color: #fff;
-  line-height: 57px;
-  text-align: center;
-  background: #32BAF0;
-  margin-left: 88px;
-  border-radius: 3px;
-  margin-bottom: 64px;
-  margin-top: -19px;
-
-}
-
-.teacher::before {
-  background: url("../assets/registerIma/teacher.png");
-  content: '';
-  position: absolute;
-  left: 26px;
-  top: 147px;
-  width: 60px;
-  height: 60px;
-
-}
-
-.choose {
-  margin-top: 70px;
-  margin-left: 15px;
-}
-
 .registerBack {
   background: url("../assets/registerIma/register.jpg");
   background-size: cover;
   width: 100%;
   height: 100%;
+  padding-top: 40px;
   margin: 0 auto;
 }
 
-.back-ground {
-  width: 25%;
-  height: 53%;
+.teacherDiv, .studentDiv {
+  width: 400px;
+  height: auto;
   background: white;
-  margin-top: 7%;
-  position: absolute;
-  margin-left: 36%;
   border-radius: 4px;
-  margin-right: auto;
+  padding: 20px 40px;
+  margin: 0 auto;
 }
 
-.teacherDiv {
+
+.register-name {
+  display: flex;
+  align-items: center;
+  line-height: 48px;
+  margin-bottom: 20px;
+}
+.register-name img{
+  display: block;
+}
+.register-name  span{
+  font-size: 32px;
+  color: #3B3D45;
+  margin-left: 20px;
+}
+
+.menu-main {
+  width: 420px;
+  height: 504px;
+  padding: 30px 30px 0;
+  background: #FFF;
+  border-radius: 4px;
+  margin: 0 auto;
+}
+
+.menu-main .menu-reg{
+  font-size: 32px;
+  color: #3B3D45;
+  font-weight: normal;
+  margin: 0;
+}
+.menu-main .identity {
+  margin-top: 20px;
+  color: #707070;
+}
+
+.btn-reg {
   width: 100%;
-  height: 470px;
-  background: white;
-  margin-top: -12%;
-  position: absolute;
-  margin-left: 0%;
-  border-radius: 4px;
-  margin-right: auto;
-  padding: 25px;
+  margin-top: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.btn-reg img{
+  display: block;
+  width: 60px;
+  height: 60px;
 }
 
-.studentDiv {
-  width: 100%;
-  height: 520px;
-  background: white;
-  margin-top: -16%;
-  position: absolute;
-  margin-left: 0%;
+.btn-reg a{
+  display: block;
+  width: 330px;
+  font-size: 16px;
+  color: #fff;
+  line-height: 64px;
+  text-align: center;
+  background: #32BAF0;
   border-radius: 4px;
-  margin-right: auto;
-  padding-top: 20px;
 }
-
 </style>

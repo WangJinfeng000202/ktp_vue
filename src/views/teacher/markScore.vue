@@ -137,7 +137,7 @@
         <div class="file" v-for="file in fileList">
           <div><img src="../../assets/fileType/file_ext_big_others.png" width="55" height="55" alt=""></div>
           <div class="file-detail">
-            <div class="filename">{{ file.name }}</div>
+            <div class="filename" @click="review(file)">{{ file.name }}</div>
             <div class="size-re">
               <div>
                 {{ file.size }}
@@ -209,6 +209,9 @@ export default {
       .catch(err => {
         this.$message.error(err.msg)
       })
+    },
+    review(file){
+      window.open("https://view.officeapps.live.com/op/view.aspx?src=" + file.url,"_blank")
     },
     checkHomework (id) {
       this.stuFileList = true

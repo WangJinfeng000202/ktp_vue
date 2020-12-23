@@ -4,7 +4,7 @@ import { MessageBox, Message } from 'element-ui'
 
 const request = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // 基础路径,.env.development
-  timeout: 60000 // 超时时间，5000毫秒
+  timeout: 60000 // 超时时间，60000毫秒
 })
 
 // request interceptor
@@ -37,7 +37,7 @@ request.interceptors.response.use(
       Message({
         message: res.msg,
         type: 'error',
-        duration: 5 * 1000
+        duration: 6 * 10000
       })
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
@@ -49,7 +49,7 @@ request.interceptors.response.use(
     Message({
       message: error.msg,
       type: 'error',
-      duration: 5 * 1000
+      duration: 6 * 10000
     })
     return Promise.reject(error)
   }
