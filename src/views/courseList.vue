@@ -194,7 +194,7 @@
           <div>
             <span><img class=" avatar el-avatar--small el-avatar--circle"
                        src="https://ktp123.oss-cn-beijing.aliyuncs.com/cover/35.png" alt=""></span>
-            <span style="font-size: 12px;margin-left: 10px">成员{{ course.userVos.length }}人</span>
+            <span style="font-size: 12px;margin-left: 10px">成员{{ course.memberCount }}人</span>
           </div>
           <div>
             <span @click="topOrNotCourse(course)" class="is-top">{{ course.isTop === 0 ? '取消置顶' : '置顶' }}</span>
